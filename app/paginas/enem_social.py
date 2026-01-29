@@ -42,17 +42,17 @@ def pagina_enem_social():
                 default=edubasi.obter_anos_selecionados(),
                 placeholder="Selecione ao menos um ano"
             )
-            if st.button("Atualizar"):
-                if len(anos) == 0:
-                    st.warning("Escolha, pelo menos, um ano de análise.")
-                else:
-                    edubasi.selecionar_anos(anos)
-            aux = []
-            for ano in edubasi.obter_anos_selecionados():
-                df = edubasi.obter_dados(ano=ano, id_municipio=edubasi.obter_municipio_selecionado())
-                aux.append(df)
-            df_original = pd.concat(aux, ignore_index=True, sort=False)
-            cont = len(df_original)
+
+            if not anos:
+                st.warning("Escolha, pelo menos, um ano de análise.")
+            else:
+                #edubasi.selecionar_anos(anos)
+                aux = []
+                for ano in anos:
+                    df = edubasi.obter_dados(ano=ano, id_municipio=edubasi.obter_municipio_selecionado())
+                    aux.append(df)
+                df_original = pd.concat(aux, ignore_index=True, sort=False)
+                cont = len(df_original)
 #=====================================================================================================
 
             resp = st.checkbox('Incluir estudantes sem informação de escola', value=True)
@@ -443,17 +443,23 @@ def pagina_enem_social():
                 placeholder="Selecione o tipo de situação"
             )
             df = fs.filtro_multiselect(df, redacao, map_redacao, 'TP_STATUS_REDACAO')
+    cont = len(df)
     st.metric('Quantidade de registros', value=str(cont), border=False)
-    st.write(df)
+    #st.write(df)
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(['GERAL',
-                                                        'DADOS ESCOLARES',
-                                                        'DADOS DA PROVA ',
-                                                        'DADOS SOBRE ELETRO-DOMESTICO',
-                                                        'DADOS SOBRE VEICULOS',
-                                                        'DADOS SOBRE A MORADIA',
-                                                        'DADOS SOBRE APARELHOS DIGITAIS E INTERNET']
-                                                       )
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
+        [
+        'GERAL',
+        'ESTUDANTE',
+        'DADOS ESCOLARES',
+        'RENDA',
+        'DADOS DA PROVA ',
+        'DADOS SOBRE ELETRO-DOMESTICO',
+        'DADOS SOBRE VEICULOS',
+        'DADOS SOBRE A MORADIA',
+        'DADOS SOBRE APARELHOS DIGITAIS E INTERNET'
+    ]
+    )
 
     with tab1:
 
@@ -470,13 +476,69 @@ def pagina_enem_social():
             "Ano",
             "Quantidade",
             "Anos",
-            "v"
+            "v",
+            False,
+            True
         )
 
     with tab2:
+
+        with st.expander('Informações sobre sexo'):
+                map_sexo = {
+                    'M':"Masculino",
+                    'F':"Feminino"
+                }
+
+                pizza0 = fs.grafico_pizza(
+                    df,
+                    'TP_SEXO',
+                    'Sexualidade',
+                    'Quantidade',
+                    'Sexualidade',
+                    map_sexo
+                )
+                #===================================================================
+        with st.expander('Informações sobre estado civil'):
+            map_estado_civil= {
+                '0':'Solteiro(a)',
+                '1':'Casado(a) / Mora com companheiro(a)',
+                '2':'Divorciado(a) / Desquitado(a) / Separado(a)',
+                '3':'Viúvo(a)'
+            }
+            pizza = fs.grafico_pizza(
+                df,
+                'TP_ESTADO_CIVIL',
+                'Estado Civil',
+                'Quantidade',
+                'Estado Civil',
+                map_estado_civil
+            )
+    #===================================================================
+        with st.expander('Informações sobre cor/raça'):
+            map_cores = {
+                '0': "Não declarado",
+                '1': "Branca",
+                '2': "Preta",
+                '3': "Parda",
+                '4': "Amarela",
+                '5': "Indígena"
+            }
+
+            pizza10 = fs.grafico_pizza(
+                df,
+                'TP_COR_RACA',
+                'Cor/Raça',
+                'quantidade',
+                'Cor/Raça',
+                map_cores
+            )
+        with st.expander('informações sobre faixa etária'):
+            pass
+
+    with tab3:
         # ============ tipo de depedencia ===========================
-        col1, col2 = st.columns(2)
-        with col1:
+
+        with st.expander("Distribuição por administração"):
             map = {
                 None: 'Não informado',
                 '1': "Federal",
@@ -490,8 +552,8 @@ def pagina_enem_social():
                                       "Quantidade",
                                       'Tipo de dependência',
                                       map)
-        # ============ Tipo de ensino ================================
-        with col2:
+        # =========== zona territorial ==============================
+        with st.expander('Distribuição por localidade'):
             map = {
                 None: 'Não informada',
                 '1': 'Urbana',
@@ -503,38 +565,62 @@ def pagina_enem_social():
                 'Tipo de zona',
                 'Quantidade',
                 'Tipos de Zonas',
-                map)
-        # =========== zona territorial ==============================
+                map,
+            )
 
-        map = {
-            None : 'Não informado',
-            '1': "Ensino Regular",
-            '2': "Educação Especial - Modalidade Substitutiva",
-            '3': "Educação de Jovens e Adultos"
-        }
-        barra1 = fs.grafico_barra(
-            df,
-            'TP_ENSINO',
-            'tipo de ensino',
-            'Quantidade',
-            'Tipo de ensino',
-            'v',
-            map)
+        # ============ Tipo de ensino ================================
+        with st.expander('Distribuição por tipo de ensino'):
+            map = {
+                None : 'Não informado',
+                '1': "Ensino Regular",
+                '2': "Educação Especial - Modalidade Substitutiva",
+                '3': "Educação de Jovens e Adultos"
+            }
+            barra1 = fs.grafico_barra(
+                df,
+                'TP_ENSINO',
+                'tipo de ensino',
+                'Quantidade',
+                'Tipo de ensino',
+                'v',
+                map,
+                True,
+                True
+            )
 
-    with tab3:
+    with tab4:
+        st.write('em desenvolvimento')
+
+        clas_A = ['Q']
+        clas_B = ['N','O','P']
+        clas_C = ['H','I','J','K','L','M']
+        clas_D = ['E','F','G']
+        clas_E = ['B','C','D']
+        clas_F = ['A']
+
+        vet = [clas_A, clas_B, clas_C, clas_D, clas_E, clas_F]
+
+        teste = fs.multi(df, vet)
+
+        tab16 = fs.grafico_renda(teste,'quantidade','Q006')
+
+    with tab5:
         # =========== lingua estrangeira ============================
-        map = {
-            '0': "Inglês",
-            '1': "Espanhol"
-        }
-        barra2 = fs.grafico_barra(
-            df,
-            'TP_LINGUA',
-            'tipo de lingua',
-            'Quantidade',
-            'Tipo de linguagem estrangeira escolhida',
-            'v',
-            map)
+        with st.expander(''):
+            map = {
+                '0': "Inglês",
+                '1': "Espanhol"
+            }
+            barra2 = fs.grafico_barra(
+                df,
+                'TP_LINGUA',
+                'tipo de lingua',
+                'Quantidade',
+                'Tipo de linguagem estrangeira escolhida',
+                'v',
+                map,
+                True
+            )
 
         # =========== prova treino ou não =========================
         map = {
@@ -549,7 +635,7 @@ def pagina_enem_social():
             'Tipo de Modalidade de Prova',
             map)
 
-    with tab4:
+    with tab6:
         # ======== maquina de lavar ================================
         map = {
             "A": "Nenhuma.",
@@ -565,7 +651,8 @@ def pagina_enem_social():
             'Quantidade de respostas',
             'Possuem maquinas de lavar roupa',
             'h',
-            map)
+            map,
+        )
 
         # ======== micro-ondas ======================================
         map = {
@@ -599,7 +686,7 @@ def pagina_enem_social():
             'Possuem televisão de cor',
             map)
 
-    with tab5:
+    with tab7:
         # ======== automovel moto =================================
         map = {
             "A": "Nenhuma.",
@@ -615,7 +702,8 @@ def pagina_enem_social():
             'Quantidade de respostas',
             'Possuem Moto',
             'h',
-            map)
+            map,
+        )
 
         # ========== automovel carro ==============================
         map = {
@@ -634,7 +722,26 @@ def pagina_enem_social():
             'h',
             map)
 
-    with tab6:
+        #================== ambos os automoveis =====================
+        tab = fs.colunas_cruzadas(df,'Q010','Q011')
+        map = {
+            "A": "Não possui nenhum",
+            "B": "Possui Carro",
+            "C": "Possui moto",
+            "D": 'Possui Ambos'
+        }
+
+        barra9 = fs.grafico_barra(
+            tab,
+            'Veiculos',
+            'Possui ambos ou somente um veiculo',
+            'Quantidade de respostas',
+            'Possui ambos ou somente um veiculo de trasnporte(Carro e moto) ?',
+            'h',
+            map,
+        )
+
+    with tab8:
         # =========== empregada domestica ===========================
         map = {
             "A": "Não.",
@@ -649,7 +756,10 @@ def pagina_enem_social():
             'Quantidade de respostas',
             'Possue Empregada',
             'v',
-            map)
+            map,
+            True,
+            True
+        )
 
         # ========== possui banheiro ===============================
         map = {
@@ -685,7 +795,7 @@ def pagina_enem_social():
             'h',
             map)
 
-    with tab7:
+    with tab9:
         # ============ internet ====================================
         map = {
             'A': 'Não.',
@@ -729,28 +839,3 @@ def pagina_enem_social():
             'Quantidade de respostas',
             'Possuem Computador',
             map)
-
-
-
-
-
-'''
-# ================== expander 4 ===================================================
-# =================================================================================
-    # ========= automoveis =====================================TESTE
-
-        map = {
-
-            "A": "Não.",
-            "B": "Sim, um.",
-            "C": "Sim, dois.",
-            "D": "Sim, três.",
-            "E": "Sim, quatro ou mais."
-        }
-
-        automovel = df["Q010"].map(map).value_counts().reset_index()
-        automovel.columns = ['possui_automovel', 'Resposta']
-        #st.write(automovel)
-
-
-'''
