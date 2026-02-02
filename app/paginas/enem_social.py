@@ -80,9 +80,9 @@ def pagina_enem_social():
             map_est_civil = {
                 'Não informado':'0',
                 'Solteiro(a)':'1',
-                             'Casado(a)/Mora com companheiro(a)':'2',
-                             'Divorciado(a)/Desquitado(a)/Separado(a)':'3',
-                             'Viúvo(a)':'4'}
+                'Casado(a)/Mora com companheiro(a)':'2',
+                'Divorciado(a)/Desquitado(a)/Separado(a)':'3',
+                'Viúvo(a)':'4'}
 
             df = fs.filtro_multiselect(df, est_civil, map_est_civil, 'TP_ESTADO_CIVIL')
 
@@ -484,6 +484,8 @@ def pagina_enem_social():
     with tab2:
 
         with st.expander('Informações sobre sexo'):
+            col1, col2 = st.columns(2)
+            with col1:
                 map_sexo = {
                     'M':"Masculino",
                     'F':"Feminino"
@@ -494,44 +496,61 @@ def pagina_enem_social():
                     'TP_SEXO',
                     'Sexualidade',
                     'Quantidade',
-                    'Sexualidade',
+                    'Percentual de inscritos por sexo',
                     map_sexo
                 )
                 #===================================================================
+            with col2:
+                pass
+                df_filtrado = fs.multi(df,'NU_ANO','TP_SEXO')
+                multi_tab_sexo = fs.grafico_renda(df_filtrado,'NU_ANO', 'quantidade', 'TP_SEXO' )
+
         with st.expander('Informações sobre estado civil'):
-            map_estado_civil= {
-                '0':'Solteiro(a)',
-                '1':'Casado(a) / Mora com companheiro(a)',
-                '2':'Divorciado(a) / Desquitado(a) / Separado(a)',
-                '3':'Viúvo(a)'
-            }
-            pizza = fs.grafico_pizza(
-                df,
-                'TP_ESTADO_CIVIL',
-                'Estado Civil',
-                'Quantidade',
-                'Estado Civil',
-                map_estado_civil
-            )
+            col1, col2 = st.columns(2)
+            with col1:
+                map_estado_civil= {
+                    '0':'Não informado',
+                    '1':'Solteiro(a)',
+                    '2':'Casado(a) / Mora com companheiro(a)',
+                    '3':'Divorciado(a) / Desquitado(a) / Separado(a)',
+                    '4':'Viúvo(a)'
+                }
+                pizza = fs.grafico_pizza(
+                    df,
+                    'TP_ESTADO_CIVIL',
+                    'Estado Civil',
+                    'Quantidade',
+                    'Estado Civil',
+                    map_estado_civil
+                )
+            with col2:
+                df_filtrado = fs.multi(df,'NU_ANO','TP_ESTADO_CIVIL')
+                multi_tab_estado = fs.grafico_renda(df_filtrado,'NU_ANO', 'quantidade', 'TP_ESTADO_CIVIL' )
     #===================================================================
         with st.expander('Informações sobre cor/raça'):
-            map_cores = {
-                '0': "Não declarado",
-                '1': "Branca",
-                '2': "Preta",
-                '3': "Parda",
-                '4': "Amarela",
-                '5': "Indígena"
-            }
+            col1, col2 = st.columns(2)
+            with col1:
+                map_cores = {
+                    '0': "Não declarado",
+                    '1': "Branca",
+                    '2': "Preta",
+                    '3': "Parda",
+                    '4': "Amarela",
+                    '5': "Indígena"
+                }
 
-            pizza10 = fs.grafico_pizza(
-                df,
-                'TP_COR_RACA',
-                'Cor/Raça',
-                'quantidade',
-                'Cor/Raça',
-                map_cores
-            )
+                pizza10 = fs.grafico_pizza(
+                    df,
+                    'TP_COR_RACA',
+                    'Cor/Raça',
+                    'quantidade',
+                    'Cor/Raça',
+                    map_cores
+                )
+            with col2:
+                df_filtrado = fs.multi(df,'NU_ANO','TP_COR_RACA')
+                multi_tab_cores = fs.grafico_renda(df_filtrado,'NU_ANO', 'quantidade', 'TP_COR_RACA' )
+
         with st.expander('informações sobre faixa etária'):
             pass
 
@@ -585,7 +604,6 @@ def pagina_enem_social():
                 'v',
                 map,
                 True,
-                True
             )
 
     with tab4:
@@ -600,9 +618,19 @@ def pagina_enem_social():
 
         vet = [clas_A, clas_B, clas_C, clas_D, clas_E, clas_F]
 
-        teste = fs.multi(df, vet)
+        df_tratado = df
 
-        tab16 = fs.grafico_renda(teste,'quantidade','Q006')
+        # transformação de registros para um compreensivel
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Classe A')
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe B')
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe C')
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe D')
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe E')
+        df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Sem Rendimento')
+
+        teste = fs.multi(df_tratado,'NU_ANO','Q006')
+
+        #tab16 = fs.grafico_renda(teste,'quantidade','Q006')
 
     with tab5:
         # =========== lingua estrangeira ============================
@@ -758,7 +786,6 @@ def pagina_enem_social():
             'v',
             map,
             True,
-            True
         )
 
         # ========== possui banheiro ===============================
