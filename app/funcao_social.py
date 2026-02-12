@@ -60,6 +60,9 @@ def grafico_pizza (df, coluna, col1, col2, tile, map):
 
 def colunas_cruzadas (df, col1, col2):
     df_novo = pd.DataFrame()
+    df_novo['ANOS'] = df['NU_ANO']
+    df_novo[col1] = df[col1]
+    df_novo[col2] = df[col2]
     def classificar (linha):
         a = linha[col1]
         b = linha[col2]
@@ -78,43 +81,80 @@ def colunas_cruzadas (df, col1, col2):
 
 def multi (df, col1, col2):
 
-    #copia do df original
-    #df_tratado = df
-
-    #transformação de registros para um compreensivel
-    '''
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Classe A')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe B')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe C')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe D')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe E')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Sem Rendimento')
-    '''
-
-
     df= df.groupby([col1,col2]).size().reset_index(name='quantidade')
-
-
 
     #st.write(df)
 
     return df
 
-def grafico_renda(df, col1, col2, col3):
-    df['percentual'] = (df['quantidade'] / df.groupby('NU_ANO')['quantidade'].transform('sum')) * 100
+def grafico_renda(df, col1, col2, col3, horientacao=False):
+    df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
 
-    barra=px.bar(
-        df,
-        x=col1,
-        y=col2,
-        color = col3,
-        text=df["label"],
-        orientation='v',
-        barmode = 'group'
-    )
+    if horientacao == 'h':
+        barra=px.bar(
+            df,
+            x=col1,
+            y=col2,
+            color = col3,
+            text=df["label"],
+            orientation='h',
+            barmode = 'group'
+        )
+    else:
+        barra = px.bar(
+            df,
+            x=col1,
+            y=col2,
+            color=col3,
+            text=df["label"],
+            orientation='v',
+            barmode='group'
+        )
 
     return st.plotly_chart(barra, use_container_width=True)
+
+def grafico_teste(df):
+
+    df = df.copy()
+
+    # 🔥 garante que ano seja categórico
+    df['NU_ANO'] = df['NU_ANO'].astype(str)
+
+    # 🔥 calcula percentual dentro de cada ano
+    df['percentual'] = (
+        df['quantidade'] /
+        df.groupby('NU_ANO')['quantidade'].transform('sum')
+    ) * 100
+
+    st.write(df)
+
+
+    fig = px.bar(
+        df,
+        x='NU_ANO',
+        y='percentual',
+        color= 'quantidade' ,
+        barmode='stack'
+    )
+
+    fig.update_traces(textposition='inside')
+
+    fig.update_layout(
+        title='Percentuais por ano e faixa de renda',
+        yaxis=dict(
+            title='Percentual',
+            range=[0,100]   # 🔥 força 0 a 100%
+        ),
+        xaxis=dict(title='Anos'),
+        legend_title='Faixa de renda',
+        paper_bgcolor='white',
+        plot_bgcolor='#EAEAEA'
+    )
+
+    return st.plotly_chart(fig, use_container_width=True)
+
+
 
 def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=None):
     # =============================================
