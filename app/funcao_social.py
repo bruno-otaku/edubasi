@@ -3,6 +3,7 @@ from email.utils import collapse_rfc2231_value
 import streamlit as st
 import plotly.express as px
 import pandas as pd
+import plotly.graph_objects as go
 
 def filtro_prova_treino(df, resp):
     if resp == True:
@@ -13,7 +14,7 @@ def filtro_prova_treino(df, resp):
     else:
         df = df[df['IN_TREINEIRO'] == '0']
         return df
-#=======================================================================================
+
 def filtro_alunos_sem_escola(df, resp):
     if resp == True:
         return df
@@ -21,7 +22,7 @@ def filtro_alunos_sem_escola(df, resp):
         vet = ['1', '2', '3']
         df = df[df['TP_ENSINO'].isin(vet)]
         return df
-# ========================filtro Sexualidade=============================================
+
 def filtro_multiselect(df, sexo, map, coluna):
     aux = []
     if len(sexo) > 0:
@@ -45,11 +46,18 @@ def multicolunas(df, resp):
         return df
     df_filtrado = df[(df['Q010'].isin(vet[0])) & (df['Q011'].isin(vet[1]))]
     return df_filtrado
-#-======================================graficos===========================================================
-#==========================================================================================================
-def grafico_pizza (df, coluna, col1, col2, tile, map):
-    info = df[coluna].map(map).value_counts().reset_index()
-    info.columns = [col1 , col2]
+
+def grafico_pizza (df, coluna, col1, col2, tile, map=False):
+
+
+    if map:
+        df[coluna] = df[coluna].map(map)
+        info = df[coluna].value_counts().reset_index()
+        info.columns = [col1 , col2]
+    else:
+        info = df
+
+
     #st.write(info)
     cores_map = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
@@ -79,15 +87,19 @@ def colunas_cruzadas (df, col1, col2):
     df_novo['Veiculos'] = df.apply(classificar, axis=1)
     return df_novo
 
-def multi (df, col1, col2):
+def multi (df, col1, col2, col3=False):
 
-    df= df.groupby([col1,col2]).size().reset_index(name='quantidade')
+    if col3 == False:
+        df= df.groupby([col1,col2]).size().reset_index(name='quantidade')
+    else:
+        df = df.groupby([col1,col2,col3]).size().reset_index(name='quantidade')
 
     #st.write(df)
 
     return df
 
 def grafico_renda(df, col1, col2, col3, horientacao=False):
+    df = df.copy()
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
 
@@ -118,23 +130,34 @@ def grafico_teste(df):
 
     df = df.copy()
 
-    # 🔥 garante que ano seja categórico
-    df['NU_ANO'] = df['NU_ANO'].astype(str)
+    df_final = pd.concat([
+        df,
+        df.groupby('Q006', as_index=False)['quantidade']
+        .sum()
+        .assign(NU_ANO="todos")
+    ], ignore_index=True)
 
-    # 🔥 calcula percentual dentro de cada ano
-    df['percentual'] = (
-        df['quantidade'] /
-        df.groupby('NU_ANO')['quantidade'].transform('sum')
-    ) * 100
+    df_final['percentual'] = (df_final['quantidade'] /df_final.groupby('NU_ANO')['quantidade'].transform('sum')) * 100
 
-    st.write(df)
 
+    cores = {
+        "Classe A": "#1f77b4",
+        "Classe B": "#2ca02c",
+        "Classe C": "#ff7f0e",
+        "Classe D": "#d62728",
+        "Classe E": "#9467bd",
+        "Sem Rendimento": "#7f7f7f"
+    }
+
+    df_final['NU_ANO'] = df_final['NU_ANO'].astype(str)
+    #st.write(df_final)
 
     fig = px.bar(
-        df,
+        df_final,
         x='NU_ANO',
         y='percentual',
-        color= 'quantidade' ,
+        color='Q006',
+        color_discrete_map=cores,
         barmode='stack'
     )
 
@@ -144,7 +167,7 @@ def grafico_teste(df):
         title='Percentuais por ano e faixa de renda',
         yaxis=dict(
             title='Percentual',
-            range=[0,100]   # 🔥 força 0 a 100%
+            range=[0,100]
         ),
         xaxis=dict(title='Anos'),
         legend_title='Faixa de renda',
@@ -154,7 +177,74 @@ def grafico_teste(df):
 
     return st.plotly_chart(fig, use_container_width=True)
 
+def grafico_relative(df,col1,col2,col3,title):
 
+    df = df.sort_values(by=col1).reset_index(drop=True)
+
+    df['percentual'] = (
+                   df['quantidade'] /
+                   df.groupby(col1)['quantidade'].transform('sum')
+           ) * 100
+    df["Porcentagem"] = df["percentual"].map("{:.2f}%".format)
+
+
+    #st.write(df)
+
+    cores = {
+        "Classe A": "#1f77b4",
+        "Classe B": "#2ca02c",
+        "Classe C": "#ff7f0e",
+        "Classe D": "#d62728",
+        "Classe E": "#9467bd",
+        "Sem Rendimento": "#7f7f7f"
+    }
+
+    df['percentual_acumulado'] = (df.groupby(['NU_ANO', col1])['percentual'].cumsum())
+    df["Porcentagem_acumulada"] = df["percentual_acumulado"].map("{:.2f}%".format)
+
+    #st.write(df)
+
+    fig = px.bar(
+        df,
+        x=col1,
+        y=col2,
+        color=col3,
+        color_discrete_map=cores,
+        hover_data={
+            'NU_ANO': True,
+            'Q006': True,
+            'Porcentagem': True,
+            'Porcentagem_acumulada': True,
+            col1: False,
+            'quantidade': False,
+            'percentual': False,
+            'percentual_acumulado': False
+        },
+        labels={
+            'NU_ANO': 'Ano',
+            'Q006': 'Faixa de salário',
+            'Porcentagem': 'Percentual (%)',
+            'Porcentagem_acumulada': 'Porcentagem acumulada (%)',
+        },
+        barmode='stack',
+        orientation='v'
+    )
+
+    fig.update_traces(textposition='inside')
+
+    fig.update_layout(
+        title=title,
+        yaxis=dict(
+            title='Percentual',
+            range=[0, 100]
+        ),
+        xaxis=dict(title='Anos'),
+        legend_title='Faixa de renda',
+        paper_bgcolor='white',
+        plot_bgcolor='#EAEAEA'
+    )
+
+    return st.plotly_chart(fig, use_container_width=True)
 
 def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=None):
     # =============================================
@@ -272,4 +362,26 @@ def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=No
     )
 
     return st.plotly_chart(barra, theme=None, use_container_width=True)
-#========================================================================================================
+
+def classes(df):
+
+    df_tratado = df
+    clas_A = ['Q']
+    clas_B = ['N', 'O', 'P']
+    clas_C = ['H', 'I', 'J', 'K', 'L', 'M']
+    clas_D = ['E', 'F', 'G']
+    clas_E = ['B', 'C', 'D']
+    clas_F = ['A']
+
+    vet = [clas_A, clas_B, clas_C, clas_D, clas_E, clas_F]
+
+    # transformação de registros para um compreensivel
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Classe A')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe B')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe C')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe D')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe E')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Sem Rendimento')
+
+    return df_tratado
+

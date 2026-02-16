@@ -657,47 +657,81 @@ def pagina_enem_social():
 
     with tab4:
 
+        # mapeamento de faixas de renda
+        map_FR = {
+            "A": "Nenhuma renda.",
+            "B": "Até R$ 954,00.",
+            "C": "De R$ 954,01 até R$ 1.431,00.",
+            "D": "De R$ 1.431,01 até R$ 1.908,00.",
+            "E": "De R$ 1.908,01 até R$ 2.385,00.",
+            "F": "De R$ 2.385,01 até R$ 2.862,00.",
+            "G": "De R$ 2.862,01 até R$ 3.816,00.",
+            "H": "De R$ 3.816,01 até R$ 4.770,00.",
+            "I": "De R$ 4.770,01 até R$ 5.724,00.",
+            "J": "De R$ 5.724,01 até R$ 6.678,00.",
+            "K": "De R$ 6.678,01 até R$ 7.632,00.",
+            "L": "De R$ 7.632,01 até R$ 8.586,00.",
+            "M": "De R$ 8.586,01 até R$ 9.540,00.",
+            "N": "De R$ 9.540,01 até R$ 11.448,00.",
+            "O": "De R$ 11.448,01 até R$ 14.310,00.",
+            "P": "De R$ 14.310,01 até R$ 19.080,00.",
+            "Q": "Mais de R$ 19.080,00."
+        }
+
+        df['Q006'] = df['Q006'].map(map_FR)
+        st.write(df['Q006'])
         with st.expander('Distribuição por renda'):
-            st.write('em desenvolvimento')
 
-            clas_A = ['Q']
-            clas_B = ['N','O','P']
-            clas_C = ['H','I','J','K','L','M']
-            clas_D = ['E','F','G']
-            clas_E = ['B','C','D']
-            clas_F = ['A']
-
-            vet = [clas_A, clas_B, clas_C, clas_D, clas_E, clas_F]
-
-
-            df_tratado = df
-
-            # transformação de registros para um compreensivel
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Classe A')
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe B')
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe C')
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe D')
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe E')
-            df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Sem Rendimento')
-
-
+            df_teste = df.copy()
+            df_tratado = fs.classes(df_teste)
             teste = fs.multi(df_tratado,'NU_ANO','Q006')
-
-            #st.write(teste)
-
-            tab16 = fs.grafico_renda(teste,'quantidade','Q006','NU_ANO','h')
             tab16 = fs.grafico_teste(teste)
 
         with st.expander('Distribuição por classe social'):
-            pass
-        with st.expander('Distribuição por renda'):
-            pass
-        with st.expander('Distribuição por renda'):
-            pass
-        with st.expander('Distribuição por renda'):
-            pass
-        with st.expander('Distribuição por renda'):
-            pass
+            col1, col2 = st.columns(2)
+            with col1:
+
+                pizza10 = fs.grafico_pizza(
+                    teste,
+                    'Q006',
+                    'Q006',
+                    'quantidade',
+                    'Percentuais gerais',
+                    False
+                )
+
+            with col2:
+                tab20 = fs.grafico_renda(teste,'NU_ANO','quantidade','Q006')
+
+        with st.expander('Distribuição de renda por cor/raça'):
+
+            df_tratado2 = fs.multi(df, 'NU_ANO', 'TP_COR_RACA','Q006')
+            tab20 = fs.grafico_relative(df_tratado2, 'TP_COR_RACA', 'percentual', 'Q006', 'Percentuais por cor/raça')
+
+        with st.expander('Distribuição de renda por estado civil'):
+
+            df_tratado = fs.multi(df, 'NU_ANO', 'TP_ESTADO_CIVIL', 'Q006')
+            tab21 = fs.grafico_relative(df_tratado, 'TP_ESTADO_CIVIL', 'percentual', 'Q006', 'Percentuais por estado civil')
+
+        with st.expander('Distribuição de renda por idade'):
+
+            df_tratado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA', 'Q006')
+            tab22 = fs.grafico_relative(df_tratado,'TP_FAIXA_ETARIA', 'percentual', 'Q006', 'Percentuais por idade')
+
+        with st.expander('Distribuição de renda por administração da escola'):
+
+            df_tratado = fs.multi(df, 'NU_ANO', 'TP_DEPENDENCIA_ADM_ESC', 'Q006')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_DEPENDENCIA_ADM_ESC', 'percentual', 'Q006', 'Percentuais por administração escolar')
+
+        with st.expander('Distribuição de renda por localidade'):
+
+            df_tratado = fs.multi(df, 'NU_ANO', 'TP_LOCALIZACAO_ESC', 'Q006')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_LOCALIZACAO_ESC', 'percentual', 'Q006','Percentuais por localidade')
+
+        with st.expander('Distribuição de renda por tipo de ensino'):
+
+            df_tratado = fs.multi(df, 'NU_ANO', 'TP_ENSINO', 'Q006')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_ENSINO', 'percentual', 'Q006','Percentuais por tipo de ensino')
 
     with tab5:
         # =========== lingua estrangeira ============================
