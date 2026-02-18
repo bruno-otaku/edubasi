@@ -448,7 +448,7 @@ def pagina_enem_social():
     st.metric('Quantidade de registros', value=str(cont), border=False)
     #st.write(df)
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
         [
         'GERAL',
         'ESTUDANTE',
@@ -457,7 +457,8 @@ def pagina_enem_social():
         'DADOS DA PROVA ',
         'DADOS SOBRE ELETRO-DOMESTICO',
         'MORADIA E BENS',
-        'TECNOLOGIA'
+        'TECNOLOGIA',
+        'QUESTIONÁRIO'
     ]
     )
 
@@ -679,7 +680,7 @@ def pagina_enem_social():
         }
 
         df['Q006'] = df['Q006'].map(map_FR)
-        st.write(df['Q006'])
+        #st.write(df['Q006'])
         with st.expander('Distribuição por renda'):
 
             df_teste = df.copy()
@@ -1024,3 +1025,51 @@ def pagina_enem_social():
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q022')
                 multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'Q022')
+
+    with tab9:
+        st.write(df)
+        select = st.selectbox(
+            "Escolha uma pergunta do questionário do ENEM",
+            (
+            'Até que série seu pai, ou o homem responsável por você, estudou?',
+            'Até que série sua mãe, ou a mulher responsável por você, estudou?',
+            'A partir da apresentação de algumas ocupações divididas em grupos ordenados, indique o grupo que contempla a ocupação mais próxima da ocupação do seu pai ou do homem responsável por você. (Se ele não estiver trabalhando, escolha uma ocupação pensando no último trabalho dele).',
+            'A partir da apresentação de algumas ocupações divididas em grupos ordenados, indique o grupo que contempla a ocupação mais próxima da ocupação da sua mãe ou da mulher responsável por você. (Se ela não estiver trabalhando, escolha uma ocupação pensando no último trabalho dela).',
+            'Incluindo você, quantas pessoas moram atualmente em sua residência?',
+            'Na sua residência tem geladeira?',
+            'Na sua residência tem freezer (independente ou segunda porta da geladeira)?',
+            'Na sua residência tem máquina de secar roupa (independente ou em conjunto com a máquina de lavar roupa)?',
+            'Na sua residência tem máquina de lavar louça?',
+            'Na sua residência tem aspirador de pó?',
+            'Na sua residência tem aparelho de DVD? ',
+            'Na sua residência tem TV por assinatura?',
+            'Na sua residência tem telefone fixo?',
+            'Você já concluiu ou está concluindo o Ensino Médio?',
+            'Em que tipo de escola você frequentou o Ensino Médio?',
+
+                        ),
+            index=None,
+            placeholder="Selecione uma opção..",
+        )
+        if select:
+            st.write("Você selecionou:", select)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                # =========  celular ========================================
+                controle = fs.mapeamento(select)
+
+                barra9 = fs.grafico_pizza(
+                    df,
+                    controle[0],
+                    controle[1],
+                    controle[2],
+                    controle[3],
+                    controle[4])
+            with col2:
+                df_filtrado = fs.multi(df, 'NU_ANO', controle[0])
+                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', controle[0])
+
+
+        else:
+            st.write("Nada selecionado")
