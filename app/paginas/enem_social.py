@@ -153,43 +153,44 @@ def pagina_enem_social():
                 "Selecione a renda familiar:",
                 [
                     "Nenhuma renda.",
-                    "Até R$ 954,00.",
-                    "De R$ 954,01 até R$ 1.431,00.",
-                    "De R$ 1.431,01 até R$ 1.908,00.",
-                    "De R$ 1.908,01 até R$ 2.385,00.",
-                    "De R$ 2.385,01 até R$ 2.862,00.",
-                    "De R$ 2.862,01 até R$ 3.816,00.",
-                    "De R$ 3.816,01 até R$ 4.770,00.",
-                    "De R$ 4.770,01 até R$ 5.724,00.",
-                    "De R$ 5.724,01 até R$ 6.678,00.",
-                    "De R$ 6.678,01 até R$ 7.632,00.",
-                    "De R$ 7.632,01 até R$ 8.586,00.",
-                    "De R$ 8.586,01 até R$ 9.540,00.",
-                    "De R$ 9.540,01 até R$ 11.448,00.",
-                    "De R$ 11.448,01 até R$ 14.310,00.",
-                    "De R$ 14.310,01 até R$ 19.080,00.",
-                    "Mais de R$ 19.080,00."
+                    "Até 1 salário minímo.",
+                    "De 1  até 1 salário minímo e meio.",
+                    "De 1,5 até 2 salários minímo.",
+                    "De 2 até 2 salários minímo e meio",
+                    "De 2,5 até  3 salários minímo.",
+                    "De 3 até 4 salários minímo.",
+                    "De 4 até 5 salários minímo.",
+                    "De 5 até 6 salários minímo.",
+                    "De 6 até 7 salários minímo.",
+                    "De 7 até 8 salários minímo.",
+                    "De 8 até 9 salários minímo.",
+                    "De 9 até 10 salários minímo.",
+                    "De 10 até 12 salários minímo.",
+                    "De 12 até 15 salários minímo.",
+                    "De 15 até 20 salários minímo.",
+                    "Mais de 20 salários minímo."
                 ],
                 placeholder="Selecione uma renda familiar"
             )
+
             map_renda_familiar = {
                 "Nenhuma renda.": "A",
-                "Até R$ 954,00.": "B",
-                "De R$ 954,01 até R$ 1.431,00.": "C",
-                "De R$ 1.431,01 até R$ 1.908,00.": "D",
-                "De R$ 1.908,01 até R$ 2.385,00.": "E",
-                "De R$ 2.385,01 até R$ 2.862,00.": "F",
-                "De R$ 2.862,01 até R$ 3.816,00.": "G",
-                "De R$ 3.816,01 até R$ 4.770,00.": "H",
-                "De R$ 4.770,01 até R$ 5.724,00.": "I",
-                "De R$ 5.724,01 até R$ 6.678,00.": "J",
-                "De R$ 6.678,01 até R$ 7.632,00.": "K",
-                "De R$ 7.632,01 até R$ 8.586,00.": "L",
-                "De R$ 8.586,01 até R$ 9.540,00.": "M",
-                "De R$ 9.540,01 até R$ 11.448,00.": "N",
-                "De R$ 11.448,01 até R$ 14.310,00.": "O",
-                "De R$ 14.310,01 até R$ 19.080,00.": "P",
-                "Mais de R$ 19.080,00.": "Q"
+                "Até 1 salário minímo.": "B",
+                "De 1  até 1 salário minímo e meio.": "C",
+                "De 1,5 até 2 salários minímo.": "D",
+                "De 2 até 2 salários minímo e meio": "E",
+                "De 2,5 até  3 salários minímo.": "F",
+                "De 3 até 4 salários minímo.": "G",
+                "De 4 até 5 salários minímo.": "H",
+                "De 5 até 6 salários minímo.": "I",
+                "De 6 até 7 salários minímo.": "J",
+                "De 7 até 8 salários minímo.": "K",
+                "De 8 até 9 salários minímo.": "L",
+                "De 9 até 10 salários minímo.": "M",
+                "De 10 até 12 salários minímo.": "N",
+                "De 12 até 15 salários minímo.": "O",
+                "De 15 até 20 salários minímo.": "P",
+                "Mais de 20 salários minímo.": "Q"
             }
             df = fs.filtro_multiselect(df, renda_familiar, map_renda_familiar, 'Q006')
 
@@ -589,7 +590,7 @@ def pagina_enem_social():
                 )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA')
-                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'TP_FAIXA_ETARIA' )
+                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'TP_FAIXA_ETARIA',None, True )
 
     with tab3:
         # ============ tipo de depedencia ===========================
@@ -661,22 +662,22 @@ def pagina_enem_social():
         # mapeamento de faixas de renda
         map_FR = {
             "A": "Nenhuma renda.",
-            "B": "Até R$ 954,00.",
-            "C": "De R$ 954,01 até R$ 1.431,00.",
-            "D": "De R$ 1.431,01 até R$ 1.908,00.",
-            "E": "De R$ 1.908,01 até R$ 2.385,00.",
-            "F": "De R$ 2.385,01 até R$ 2.862,00.",
-            "G": "De R$ 2.862,01 até R$ 3.816,00.",
-            "H": "De R$ 3.816,01 até R$ 4.770,00.",
-            "I": "De R$ 4.770,01 até R$ 5.724,00.",
-            "J": "De R$ 5.724,01 até R$ 6.678,00.",
-            "K": "De R$ 6.678,01 até R$ 7.632,00.",
-            "L": "De R$ 7.632,01 até R$ 8.586,00.",
-            "M": "De R$ 8.586,01 até R$ 9.540,00.",
-            "N": "De R$ 9.540,01 até R$ 11.448,00.",
-            "O": "De R$ 11.448,01 até R$ 14.310,00.",
-            "P": "De R$ 14.310,01 até R$ 19.080,00.",
-            "Q": "Mais de R$ 19.080,00."
+            "B": "Até 1 salário minímo.",
+            "C": "De 1  até 1 salário minímo e meio.",
+            "D": "De 1,5 até 2 salários minímo.",
+            "E": "De 2 até 2 salários minímo e meio",
+            "F": "De 2,5 até  3 salários minímo.",
+            "G": "De 3 até 4 salários minímo.",
+            "H": "De 4 até 5 salários minímo.",
+            "I": "De 5 até 6 salários minímo.",
+            "J": "De 6 até 7 salários minímo.",
+            "K": "De 7 até 8 salários minímo.",
+            "L": "De 8 até 9 salários minímo.",
+            "M": "De 9 até 10 salários minímo.",
+            "N": "De 10 até 12 salários minímo.",
+            "O": "De 12 até 15 salários minímo.",
+            "P": "De 15 até 20 salários minímo.",
+            "Q": "Mais de 20 salários minímo."
         }
 
         df['Q006'] = df['Q006'].map(map_FR)
@@ -698,11 +699,11 @@ def pagina_enem_social():
                     'Q006',
                     'quantidade',
                     'Percentuais gerais',
-                    False
+                    False,
                 )
 
             with col2:
-                tab20 = fs.grafico_renda(teste,'NU_ANO','quantidade','Q006')
+                tab20 = fs.grafico_renda(teste,'NU_ANO','quantidade','Q006', None, True)
 
         with st.expander('Distribuição de renda por cor/raça'):
 
@@ -944,7 +945,7 @@ def pagina_enem_social():
             with col1:
                 # ================== ambos os automoveis =====================
                 tab = fs.colunas_cruzadas(df, 'Q010', 'Q011')
-                # st.write(tab)
+                #st.write(tab)
                 map = {
                     "A": "Não possui nenhum",
                     "B": "Possui Carro",
@@ -1027,7 +1028,7 @@ def pagina_enem_social():
                 multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'Q022')
 
     with tab9:
-        st.write(df)
+        #st.write(df)
         select = st.selectbox(
             "Escolha uma pergunta do questionário do ENEM",
             (
@@ -1065,10 +1066,12 @@ def pagina_enem_social():
                     controle[1],
                     controle[2],
                     controle[3],
-                    controle[4])
+                    controle[4],
+                    controle[6]
+                )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', controle[0])
-                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', controle[0])
+                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', controle[0], controle[5], controle[6])
 
 
         else:

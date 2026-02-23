@@ -47,7 +47,7 @@ def multicolunas(df, resp):
     df_filtrado = df[(df['Q010'].isin(vet[0])) & (df['Q011'].isin(vet[1]))]
     return df_filtrado
 
-def grafico_pizza (df, coluna, col1, col2, tile, map=False):
+def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False):
 
 
     if map:
@@ -63,7 +63,12 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False):
     cores_map = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
     pizza = px.pie(info, names=col1, values=col2, color_discrete_sequence=cores_map, title=tile)
-    pizza.update_traces(textfont_size=18)
+
+    if legenda_baixa:
+        pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1))
+
+    else:
+        pizza.update_traces(textfont_size=18)
 
     return st.plotly_chart(pizza, use_container_width=True)
 
@@ -72,15 +77,16 @@ def colunas_cruzadas (df, col1, col2):
     df_novo['ANOS'] = df['NU_ANO']
     df_novo[col1] = df[col1]
     df_novo[col2] = df[col2]
+    #st.write(df_novo)
     def classificar (linha):
         a = linha[col1]
         b = linha[col2]
 
-        if a == 'A' and b == 'A':
+        if a == 'Não.' and b == 'Nenhuma.':
             return 'A'
-        elif a != 'A' and b == 'A':
+        elif a != 'Não.' and b == 'Nenhuma.':
             return 'B'
-        elif a == 'A' and b != 'A':
+        elif a == 'Não.' and b != 'Nenhuma.':
             return 'C'
         else:
             return 'D'
@@ -99,7 +105,7 @@ def multi (df, col1, col2, col3=False):
 
     return df
 
-def grafico_renda(df, col1, col2, col3, horientacao=False):
+def grafico_renda(df, col1, col2, col3, horientacao=False, legenda_top=False):
     df = df.copy()
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
@@ -129,12 +135,30 @@ def grafico_renda(df, col1, col2, col3, horientacao=False):
             text=df["label"],
             orientation='v',
             barmode='group')
+
+    if legenda_top:
+        barra.update_layout(
+            xaxis=dict(title='Anos'),
+            legend_title='Legenda',
+            paper_bgcolor='white',
+            plot_bgcolor='#EAEAEA',
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.25,  # controla o quão para baixo ela fica
+                xanchor="center",
+                x=0.5
+            ),
+            margin=dict(b=120)
+        )
+    else:
         barra.update_layout(
             xaxis=dict(title='Anos'),
             legend_title='Legenda',
             paper_bgcolor='white',
             plot_bgcolor='#EAEAEA'
         )
+
 
 
 
@@ -252,7 +276,7 @@ def grafico_relative(df,col1,col2,col3,title):
             title='Percentual',
             range=[0, 100]
         ),
-        xaxis=dict(title='Anos'),
+        xaxis=dict(title=''),
         legend_title='Faixa de renda',
         paper_bgcolor='white',
         plot_bgcolor='#EAEAEA'
@@ -282,7 +306,7 @@ def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=No
     paleta = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
     cores = {cat: paleta[i % len(paleta)] for i, cat in enumerate(info[col1].unique())}
     info["cor"] = info[col1].map(cores)
-    st.write(info)
+    #st.write(info)
 
     # =============================================
     # Criação do gráfico
@@ -412,7 +436,9 @@ def mapeamento(select):
             'Possui telefone fixo?',
             'Quantidades de respostas',
             'Possuem telefone fixo?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -434,7 +460,9 @@ def mapeamento(select):
             'Até que série o pai ou homem responsável fez:',
             'Quantidade de respostas',
             'Até que série seu pai, ou o homem responsável por você, estudou?',
-            mapa_escolaridade
+            mapa_escolaridade,
+            None,
+            True
         ]
         return vet
     # ====================================================================================================================
@@ -455,7 +483,9 @@ def mapeamento(select):
             'Até que série a mãe ou mulher responsável fez:',
             'Quantidade de respostas',
             'Até que série a mãe, ou mullher responsável por você, estudou?',
-            map
+            map,
+            None,
+            True
         ]
         return vet
     # ====================================================================================================================
@@ -479,7 +509,9 @@ def mapeamento(select):
             'Grupo que contempla a ocupação mais próxima da ocupação do pai ou do homem responsável',
             'Quantidade de respostas',
             'Grupo que contempla a ocupação mais próxima da ocupação do pai ou do homem responsável',
-            map
+            map,
+            None,
+            True
         ]
         return vet
     # ====================================================================================================================
@@ -503,7 +535,9 @@ def mapeamento(select):
             'Grupo que contempla a ocupação mais próxima da ocupação da mãe ou da mulher responsável',
             'Quantidade de respostas',
             'Grupo que contempla a ocupação mais próxima da ocupação da mãe ou da mulher responsável',
-            map
+            map,
+            None,
+            True
         ]
         return vet
     # ====================================================================================================================
@@ -536,7 +570,9 @@ def mapeamento(select):
             'Quantidade de pessoas que moram na residência',
             'Quantidade de respostas',
             'Quantidade de pessoas que moram na residência',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     #====================================================================================================================
@@ -554,7 +590,9 @@ def mapeamento(select):
             'Possue geladeira?',
             'Quantidade de respostas',
             'Possue geladeira?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -572,7 +610,9 @@ def mapeamento(select):
             'Possue freezer?',
             'Quantidade de respostas',
             'Possue freezer?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -590,7 +630,9 @@ def mapeamento(select):
             'Possue maquina de secar roupa?',
             'Quantidade de respostas',
             'Possue maquina de secar roupa?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -608,7 +650,9 @@ def mapeamento(select):
             'Possue máquina de lavar louça?',
             'Quantidade de respostas',
             'Possue máquina de lavar louça?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -623,7 +667,9 @@ def mapeamento(select):
             'Possue aspirador de pó?',
             'Quantidade de respostas',
             'Possue aspirador de pó?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -638,7 +684,9 @@ def mapeamento(select):
             'Possue aparelho de DVD?',
             'Quantidade de respostas',
             'Possue aparelho de DVD?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================
