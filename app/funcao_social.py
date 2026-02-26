@@ -4,6 +4,8 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
+from unicodedata import category
+
 
 def filtro_prova_treino(df, resp):
     if resp == True:
@@ -284,7 +286,7 @@ def grafico_relative(df,col1,col2,col3,title):
 
     return st.plotly_chart(fig, use_container_width=True)
 
-def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=None):
+def grafico_barra(df, coluna, col1, col2, titulo, mapa=False):
     # =============================================
     # Pré-processamento
     # =============================================
@@ -300,126 +302,62 @@ def grafico_barra(df, coluna, col1, col2, titulo, orientacao, mapa=False, cat=No
     info["percentual"] = info[col2] / total * 100
     info["Porcentagem"] = info["percentual"].map("{:.2f}%".format)
 
-    # =============================================
-    # Paleta de cores
-    # =============================================
-    paleta = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
-    cores = {cat: paleta[i % len(paleta)] for i, cat in enumerate(info[col1].unique())}
-    info["cor"] = info[col1].map(cores)
-    #st.write(info)
+    st.write(info)
 
-    # =============================================
-    # Criação do gráfico
-    # =============================================
-    if orientacao == 'h':
-        info = info.sort_values(by=col2, ascending=True).reset_index(drop=True)
-        barra = px.bar(
-            info,
-            x=col2,
-            y=col1,
-            text=info["Porcentagem"],
-            orientation='h'
-        )
-    else:
-        barra = px.bar(
-            info,
-            x=col1,
-            y=col2,
-            text=info["Porcentagem"],
-            orientation='v',
-            height=600
-        )
-    # =============================================
-    # Ajustes visuais
-    # =============================================
-    barra.update_traces(
-        marker_color=info["cor"],
-        width=0.7,
-        textfont=dict(family="Arial", size=20, color="black"),
-        hoverinfo='x',
-        marker=dict(line=dict(width=2, color='black'))
+
+    barra = px.bar(
+        info,
+        x=col1,
+        y=col2,
+        text=info["Quantidade"],
+        orientation='v',
+        barmode='stack',
+        category_orders={ col1:info[col1].unique().tolist() },
+
     )
 
-    # Remove títulos de eixo (caso seja categórico)
-    if cat:
-        barra.update_xaxes(title_text='',
-                           type='category',
-                           tickfont=dict(
-                               family="Arial",  # tipo de fonte
-                               size=16,  # tamanho da fonte
-                               color="black"  # cor da fonte
-                                )
-                           )
-    barra.update_xaxes(title_text='',
-                       tickfont=dict(
-                           family="Arial",  # tipo de fonte
-                           size=16,  # tamanho da fonte
-                           color="black"  # cor da fonte
-                            )
-                       )
-    barra.update_yaxes(title_text='',
-                       tickfont=dict(
-                            family="Arial",   # tipo de fonte
-                            size=16,          # tamanho da fonte
-                            color="black"     # cor da fonte
-                            )
-                       )
 
-    # =============================================
-    # Layout e borda
-    # =============================================
+
     barra.update_layout(
-        autosize=True,
-        bargap=0.05,
-        bargroupgap=0.0,
-        showlegend=False,
-        margin=dict(l=200, r=200, t=50, b=150),
-        paper_bgcolor="white",
-        plot_bgcolor="#E3E3E3",
-
-        # Título estilizado
-        title={
-            'text': titulo,
-            'x': 0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-        },
-        title_font=dict(
-            family="Arial Black",
-            size=24,
-            color="black"
-        ),
-
-        # Contorno externo (moldura)
-        shapes=[dict(
-            type="rect",
-            xref="paper", yref="paper",
-            x0=0, y0=0, x1=1, y1=1,
-            line=dict(color="black", width=3)
-        )]
+        xaxis=dict(title='Anos'),
+        legend_title='Legenda',
+        paper_bgcolor='white',
+        plot_bgcolor='#EAEAEA'
     )
+    barra.update_xaxes(type="category")
 
-    return st.plotly_chart(barra, theme=None, use_container_width=True)
+    return st.plotly_chart(barra, use_container_width=True)
 
 def classes(df):
 
     df_tratado = df
-    clas_A = ['Q']
-    clas_B = ['N', 'O', 'P']
-    clas_C = ['H', 'I', 'J', 'K', 'L', 'M']
-    clas_D = ['E', 'F', 'G']
-    clas_E = ['B', 'C', 'D']
-    clas_F = ['A']
+    clas_F = ['Nenhuma renda.']
+    clas_A = ['Mais de 20 salários minímo.']
+    clas_B = ['De 10 até 12 salários minímo.', 'De 12 até 15 salários minímo.', 'De 15 até 20 salários minímo.']
+    clas_C = ['De 4 até 5 salários minímo.',
+              'De 5 até 6 salários minímo.',
+              'De 6 até 7 salários minímo.',
+              'De 7 até 8 salários minímo.',
+              'De 8 até 9 salários minímo.',
+              'De 9 até 10 salários minímo.']
+    clas_D = ['De 2 até 2 salários minímo e meio',
+              'De 2,5 até  3 salários minímo.',
+              'De 3 até 4 salários minímo.']
+    clas_E = ['Até 1 salário minímo.',
+              'De 1  até 1 salário minímo e meio.',
+              'De 1,5 até 2 salários minímo.']
 
-    vet = [clas_A, clas_B, clas_C, clas_D, clas_E, clas_F]
+
+    vet = [clas_F,clas_A, clas_B, clas_C, clas_D, clas_E]
 
     # transformação de registros para um compreensivel
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Classe A')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe B')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe C')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe D')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe E')
-    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Sem Rendimento')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[0], 'Sem Rendimento')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[1], 'Classe A')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[2], 'Classe B')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[3], 'Classe C')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[4], 'Classe D')
+    df_tratado['Q006'] = df_tratado['Q006'].replace(vet[5], 'Classe E')
+
 
     return df_tratado
 
@@ -701,7 +639,9 @@ def mapeamento(select):
             'Possue TV por assinatura?',
             'Quantidade de respostas',
             'Possue TV por assinatura?',
-            map
+            map,
+            None,
+            None
         ]
         return vet
     # ====================================================================================================================

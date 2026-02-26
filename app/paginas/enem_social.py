@@ -445,6 +445,7 @@ def pagina_enem_social():
                 placeholder="Selecione o tipo de situação"
             )
             df = fs.filtro_multiselect(df, redacao, map_redacao, 'TP_STATUS_REDACAO')
+#==================================================================================================
     cont = len(df)
     st.metric('Quantidade de registros', value=str(cont), border=False)
     #st.write(df)
@@ -462,7 +463,7 @@ def pagina_enem_social():
         'QUESTIONÁRIO'
     ]
     )
-
+#==================================================================================================
     with tab1:
 
         col2, col3 = st.columns(2)
@@ -475,12 +476,10 @@ def pagina_enem_social():
         barra = fs.grafico_barra(
             df,
             "NU_ANO",
-            "Ano",
+            "NU_ANOS",
             "Quantidade",
             "Anos",
-            "v",
             False,
-            True
         )
 
     with tab2:
@@ -498,7 +497,7 @@ def pagina_enem_social():
                     'TP_SEXO',
                     'Sexualidade',
                     'Quantidade',
-                    'Percentual de inscritos por sexo',
+                    'Percentual de inscritos por sexo em todos os anos',
                     map_sexo
                 )
                 #===================================================================
@@ -520,9 +519,9 @@ def pagina_enem_social():
                 pizza = fs.grafico_pizza(
                     df,
                     'TP_ESTADO_CIVIL',
-                    'Estado Civil',
+                    'Estado Civil ',
                     'Quantidade',
-                    'Estado Civil',
+                    'Estado Civil em todos os anos',
                     map_estado_civil
                 )
             with col2:
@@ -546,7 +545,7 @@ def pagina_enem_social():
                     'TP_COR_RACA',
                     'Cor/Raça',
                     'quantidade',
-                    'Cor/Raça',
+                    'Cor/Raça em todos os anos',
                     map_cores
                 )
             with col2:
@@ -585,7 +584,7 @@ def pagina_enem_social():
                     'TP_FAIXA_ETARIA',
                     'Faixa etária',
                     'quantidade',
-                    'Faixa etária',
+                    'Faixa etária em todos os anos',
                     map_faixa
                 )
             with col2:
@@ -609,7 +608,7 @@ def pagina_enem_social():
                                           "TP_DEPENDENCIA_ADM_ESC",
                                           "Tipo de dependência",
                                           "Quantidade",
-                                          'Tipo de dependência',
+                                          'Tipo de dependência em todos os anos',
                                           map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'TP_DEPENDENCIA_ADM_ESC')
@@ -628,13 +627,12 @@ def pagina_enem_social():
                     'TP_LOCALIZACAO_ESC',
                     'Tipo de zona',
                     'Quantidade',
-                    'Tipos de Zonas',
+                    'Tipos de Zonas em todos os anos',
                     map,
                 )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'TP_LOCALIZACAO_ESC')
                 multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'TP_LOCALIZACAO_ESC')
-
         # ============ Tipo de ensino ================================
         with st.expander('Distribuição por tipo de ensino'):
             col1, col2 = st.columns(2)
@@ -650,7 +648,7 @@ def pagina_enem_social():
                     'TP_ENSINO',
                     'tipo de ensino',
                     'Quantidade',
-                    'Tipo de ensino',
+                    'Tipo de ensino em todos os anos',
                     map
                 )
             with col2:
@@ -684,21 +682,24 @@ def pagina_enem_social():
         #st.write(df['Q006'])
         with st.expander('Distribuição por renda'):
 
-            df_teste = df.copy()
-            df_tratado = fs.classes(df_teste)
-            teste = fs.multi(df_tratado,'NU_ANO','Q006')
+
+            teste = fs.multi(df,'NU_ANO','Q006')
             tab16 = fs.grafico_teste(teste)
 
         with st.expander('Distribuição por classe social'):
             col1, col2 = st.columns(2)
             with col1:
 
+                df_teste = df.copy()
+                df_tratado = fs.classes(df_teste)
+                teste = fs.multi(df_tratado, 'NU_ANO', 'Q006')
+
                 pizza10 = fs.grafico_pizza(
                     teste,
                     'Q006',
                     'Q006',
                     'quantidade',
-                    'Percentuais gerais',
+                    'Percentuais gerais em todos os anos',
                     False,
                 )
 
@@ -708,64 +709,35 @@ def pagina_enem_social():
         with st.expander('Distribuição de renda por cor/raça'):
 
             df_tratado2 = fs.multi(df, 'NU_ANO', 'TP_COR_RACA','Q006')
-            tab20 = fs.grafico_relative(df_tratado2, 'TP_COR_RACA', 'percentual', 'Q006', 'Percentuais por cor/raça')
+            tab20 = fs.grafico_relative(df_tratado2, 'TP_COR_RACA', 'percentual', 'Q006', 'Percentuais por cor/raça em todos os anos')
 
         with st.expander('Distribuição de renda por estado civil'):
 
             df_tratado = fs.multi(df, 'NU_ANO', 'TP_ESTADO_CIVIL', 'Q006')
-            tab21 = fs.grafico_relative(df_tratado, 'TP_ESTADO_CIVIL', 'percentual', 'Q006', 'Percentuais por estado civil')
+            tab21 = fs.grafico_relative(df_tratado, 'TP_ESTADO_CIVIL', 'percentual', 'Q006', 'Percentuais por estado civil em todos os anos')
 
         with st.expander('Distribuição de renda por idade'):
 
             df_tratado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA', 'Q006')
-            tab22 = fs.grafico_relative(df_tratado,'TP_FAIXA_ETARIA', 'percentual', 'Q006', 'Percentuais por idade')
+            tab22 = fs.grafico_relative(df_tratado,'TP_FAIXA_ETARIA', 'percentual', 'Q006', 'Percentuais por idade em todos os anos')
 
         with st.expander('Distribuição de renda por administração da escola'):
 
             df_tratado = fs.multi(df, 'NU_ANO', 'TP_DEPENDENCIA_ADM_ESC', 'Q006')
-            tab22 = fs.grafico_relative(df_tratado, 'TP_DEPENDENCIA_ADM_ESC', 'percentual', 'Q006', 'Percentuais por administração escolar')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_DEPENDENCIA_ADM_ESC', 'percentual', 'Q006', 'Percentuais por administração escolar em todos os anos')
 
         with st.expander('Distribuição de renda por localidade'):
 
             df_tratado = fs.multi(df, 'NU_ANO', 'TP_LOCALIZACAO_ESC', 'Q006')
-            tab22 = fs.grafico_relative(df_tratado, 'TP_LOCALIZACAO_ESC', 'percentual', 'Q006','Percentuais por localidade')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_LOCALIZACAO_ESC', 'percentual', 'Q006','Percentuais por localidade em todos os anos')
 
         with st.expander('Distribuição de renda por tipo de ensino'):
 
             df_tratado = fs.multi(df, 'NU_ANO', 'TP_ENSINO', 'Q006')
-            tab22 = fs.grafico_relative(df_tratado, 'TP_ENSINO', 'percentual', 'Q006','Percentuais por tipo de ensino')
+            tab22 = fs.grafico_relative(df_tratado, 'TP_ENSINO', 'percentual', 'Q006','Percentuais por tipo de ensino em todos os anos')
 
     with tab5:
-        # =========== lingua estrangeira ============================
-        with st.expander(''):
-            map = {
-                '0': "Inglês",
-                '1': "Espanhol"
-            }
-            barra2 = fs.grafico_barra(
-                df,
-                'TP_LINGUA',
-                'tipo de lingua',
-                'Quantidade',
-                'Tipo de linguagem estrangeira escolhida',
-                'v',
-                map,
-                True
-            )
-
-        # =========== prova treino ou não =========================
-        map = {
-            '1': 'Realizando prova para treino',
-            '0': 'Prova valendo pontuação'
-        }
-        pizza3 = fs.grafico_pizza(
-            df,
-            'IN_TREINEIRO',
-            'Qual modalidade',
-            'Quantidade',
-            'Tipo de Modalidade de Prova',
-            map)
-
+        pass
     with tab6:
         with st.expander('Micro-ondas'):
             col1, col2 = st.columns(2)
@@ -783,7 +755,7 @@ def pagina_enem_social():
                     "Q016",
                     'Quantos micro-ondas possui?',
                     'Quantidade de respostas',
-                    'Possuem Micro-ondas',
+                    'Possuem Micro-ondas em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO','Q016')
@@ -804,7 +776,7 @@ def pagina_enem_social():
                     'Q014',
                     'possui quantas maquinas de lavar?',
                     'Quantidade de respostas',
-                    'Possuem maquinas de lavar roupa',
+                    'Possuem maquinas de lavar roupa em todos os anos',
                     map,
                 )
             with col2:
@@ -826,7 +798,7 @@ def pagina_enem_social():
                     'Q019',
                     'Possui quntas televisão de cor?',
                     'Quantidade de respostas',
-                    'Possuem televisão de cor',
+                    'Possuem televisão de cor em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q019')
@@ -849,7 +821,7 @@ def pagina_enem_social():
                     'Q007',
                     'Possui empregada domestica?',
                     'Quantidade de respostas',
-                    'Possue Empregada',
+                    'Possue Empregada em todos os anos',
                     map,
                 )
             with col2:
@@ -871,7 +843,7 @@ def pagina_enem_social():
                     'Q008',
                     'Possui quantos banheiro?',
                     'Quantidade de respostas',
-                    'Possuem Banheiro',
+                    'Possuem Banheiro em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q008')
@@ -892,7 +864,7 @@ def pagina_enem_social():
                     'Q009',
                     'Possui quantos quartos?',
                     'Quantidade de respostas',
-                    'Possui quantos quartos na casa ',
+                    'Possui quantos quartos na casa em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q009')
@@ -913,7 +885,7 @@ def pagina_enem_social():
                     'Q011',
                     'Possui quantas motos?',
                     'Quantidade de respostas',
-                    'Possuem Moto',
+                    'Possuem Moto em todos os anos',
                     map,
                 )
             with col2:
@@ -935,7 +907,7 @@ def pagina_enem_social():
                     'Q010',
                     'Possui quantos carros?',
                     'Quantidade de respostas',
-                    'Possuem Carro',
+                    'Possuem Carro em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q010')
@@ -958,7 +930,7 @@ def pagina_enem_social():
                     'Veiculos',
                     'Possui ambos ou somente um veiculo',
                     'Quantidade de respostas',
-                    'Possui ambos ou somente um veiculo de trasnporte(Carro e moto) ?',
+                    'Possui ambos ou somente um veiculo de trasnporte(Carro e moto) em todos os anos',
                     map,
                 )
             with col2:
@@ -979,7 +951,7 @@ def pagina_enem_social():
                     'Q025',
                     'Possui internet?',
                     'Quantidades de respostas',
-                    'Possuem Internet',
+                    'Possuem Internet em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q025')
@@ -1000,7 +972,7 @@ def pagina_enem_social():
                     'Q024',
                     'Possui quantos computadores',
                     'Quantidade de respostas',
-                    'Possuem Computador',
+                    'Possuem Computador em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q024')
@@ -1021,7 +993,7 @@ def pagina_enem_social():
                     'Q022',
                     'Possui qunatos celulares?',
                     'Quantidades de respostas',
-                    'Possuem Celular',
+                    'Possuem Celular em todos os anos',
                     map)
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q022')
@@ -1042,7 +1014,7 @@ def pagina_enem_social():
             'Na sua residência tem máquina de secar roupa (independente ou em conjunto com a máquina de lavar roupa)?',
             'Na sua residência tem máquina de lavar louça?',
             'Na sua residência tem aspirador de pó?',
-            'Na sua residência tem aparelho de DVD? ',
+            'Na sua residência tem aparelho de DVD?',
             'Na sua residência tem TV por assinatura?',
             'Na sua residência tem telefone fixo?',
             'Você já concluiu ou está concluindo o Ensino Médio?',
