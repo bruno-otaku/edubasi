@@ -446,8 +446,8 @@ def pagina_enem_social():
             )
             df = fs.filtro_multiselect(df, redacao, map_redacao, 'TP_STATUS_REDACAO')
 #==================================================================================================
-    cont = len(df)
-    st.metric('Quantidade de registros', value=str(cont), border=False)
+    #cont = len(df)
+    #st.metric('Quantidade de registros', value=str(cont), border=False)
     #st.write(df)
 
     tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
@@ -467,8 +467,8 @@ def pagina_enem_social():
     with tab1:
 
         col2, col3 = st.columns(2)
-        cont1 = len(fs.filtro_prova_treino(df_original,False))
-        cont2 = len(fs.filtro_prova_treino(df_original, '1'))
+        cont1 = len(fs.filtro_prova_treino(df,False))
+        cont2 = len(fs.filtro_prova_treino(df, '1'))
         col2.metric('Regulares',value = str(cont1),border=True)
         col3.metric('Treneiros',value=str(cont2), border=True)
         #st.write(df)
@@ -553,7 +553,6 @@ def pagina_enem_social():
                 multi_tab_cores = fs.grafico_renda(df_filtrado,'NU_ANO', 'quantidade', 'TP_COR_RACA' )
 
         with st.expander('informações sobre faixa etária'):
-            st.markdown('desenvolvendo')
             col1, col2 = st.columns(2)
             with col1:
                 map_faixa = {
@@ -585,7 +584,8 @@ def pagina_enem_social():
                     'Faixa etária',
                     'quantidade',
                     'Faixa etária em todos os anos',
-                    map_faixa
+                    map_faixa,
+
                 )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA')

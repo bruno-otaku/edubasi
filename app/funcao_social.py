@@ -60,17 +60,29 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False)
     else:
         info = df
 
+    info = info.sort_values(by=col1)
+
 
     #st.write(info)
-    cores_map = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
+    #cores_map = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
-    pizza = px.pie(info, names=col1, values=col2, color_discrete_sequence=cores_map, title=tile)
+    pizza = px.pie(info,
+                   names=col1,
+                   values=col2,
+                   color=col2,
+                   category_orders={
+                       col1: sorted(info[col1].unique(), key=lambda x: x.lower())
+                   },
+                   title=tile)
 
     if legenda_baixa:
         pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1))
 
     else:
-        pizza.update_traces(textfont_size=18)
+
+        pizza.update_layout(legend_title_text= 'Legenda')
+
+
 
     return st.plotly_chart(pizza, use_container_width=True)
 
@@ -111,6 +123,7 @@ def grafico_renda(df, col1, col2, col3, horientacao=False, legenda_top=False):
     df = df.copy()
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
+
 
     if horientacao == 'h':
         barra=px.bar(
@@ -302,8 +315,7 @@ def grafico_barra(df, coluna, col1, col2, titulo, mapa=False):
     info["percentual"] = info[col2] / total * 100
     info["Porcentagem"] = info["percentual"].map("{:.2f}%".format)
 
-    st.write(info)
-
+    info = info.sort_values(by=col1)
 
     barra = px.bar(
         info,
@@ -312,7 +324,7 @@ def grafico_barra(df, coluna, col1, col2, titulo, mapa=False):
         text=info["Quantidade"],
         orientation='v',
         barmode='stack',
-        category_orders={ col1:info[col1].unique().tolist() },
+
 
     )
 
