@@ -58,7 +58,8 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False)
         info = df[coluna].value_counts().reset_index()
         info.columns = [col1 , col2]
     else:
-        info = df
+        info = df[coluna].value_counts().reset_index()
+        info.columns = [col1, col2]
 
     info = info.sort_values(by=col1)
 
@@ -191,26 +192,37 @@ def grafico_teste(df):
     ], ignore_index=True)
 
     df_final['percentual'] = (df_final['quantidade'] /df_final.groupby('NU_ANO')['quantidade'].transform('sum')) * 100
-
-
-    cores = {
-        "Classe A": "#1f77b4",
-        "Classe B": "#2ca02c",
-        "Classe C": "#ff7f0e",
-        "Classe D": "#d62728",
-        "Classe E": "#9467bd",
-        "Sem Rendimento": "#7f7f7f"
-    }
+    df_final["percentual"] = df_final["percentual"].map("{:.2f}%".format)
 
     df_final['NU_ANO'] = df_final['NU_ANO'].astype(str)
     #st.write(df_final)
+
+    ordem = [
+        "Nenhuma renda.",
+        "Até 1 salário minímo.",
+        "De 1  até 1 salário minímo e meio.",
+        "De 1,5 até 2 salários minímo.",
+        "De 2 até 2 salários minímo e meio",
+        "De 2,5 até  3 salários minímo.",
+        "De 3 até 4 salários minímo.",
+        "De 4 até 5 salários minímo.",
+        "De 5 até 6 salários minímo.",
+        "De 6 até 7 salários minímo.",
+        "De 7 até 8 salários minímo.",
+        "De 8 até 9 salários minímo.",
+        "De 9 até 10 salários minímo.",
+        "De 10 até 12 salários minímo.",
+        "De 12 até 15 salários minímo.",
+        "De 15 até 20 salários minímo.",
+        "Mais de 20 salários minímo."
+    ]
 
     fig = px.bar(
         df_final,
         x='NU_ANO',
         y='percentual',
         color='Q006',
-        color_discrete_map=cores,
+        category_orders={'Q006': ordem},
         barmode='stack'
     )
 
@@ -231,8 +243,31 @@ def grafico_teste(df):
     return st.plotly_chart(fig, use_container_width=True)
 
 def grafico_relative(df,col1,col2,col3,title):
-
-    df = df.sort_values(by=col1).reset_index(drop=True)
+    ordem = [
+        "Nenhuma renda.",
+        "Até 1 salário minímo.",
+        "De 1  até 1 salário minímo e meio.",
+        "De 1,5 até 2 salários minímo.",
+        "De 2 até 2 salários minímo e meio",
+        "De 2,5 até  3 salários minímo.",
+        "De 3 até 4 salários minímo.",
+        "De 4 até 5 salários minímo.",
+        "De 5 até 6 salários minímo.",
+        "De 6 até 7 salários minímo.",
+        "De 7 até 8 salários minímo.",
+        "De 8 até 9 salários minímo.",
+        "De 9 até 10 salários minímo.",
+        "De 10 até 12 salários minímo.",
+        "De 12 até 15 salários minímo.",
+        "De 15 até 20 salários minímo.",
+        "Mais de 20 salários minímo."
+    ]
+    df[col3] = pd.Categorical(
+        df[col3],
+        categories=ordem,
+        ordered=True
+    )
+    df = df.sort_values(col3)
 
     df['percentual'] = (
                    df['quantidade'] /
@@ -241,18 +276,7 @@ def grafico_relative(df,col1,col2,col3,title):
     df["Porcentagem"] = df["percentual"].map("{:.2f}%".format)
 
 
-    #st.write(df)
-
-    cores = {
-        "Classe A": "#1f77b4",
-        "Classe B": "#2ca02c",
-        "Classe C": "#ff7f0e",
-        "Classe D": "#d62728",
-        "Classe E": "#9467bd",
-        "Sem Rendimento": "#7f7f7f"
-    }
-
-    df['percentual_acumulado'] = (df.groupby(['NU_ANO', col1])['percentual'].cumsum())
+    df['percentual_acumulado'] = (df.groupby([col1])['percentual'].cumsum())
     df["Porcentagem_acumulada"] = df["percentual_acumulado"].map("{:.2f}%".format)
 
     #st.write(df)
@@ -262,9 +286,8 @@ def grafico_relative(df,col1,col2,col3,title):
         x=col1,
         y=col2,
         color=col3,
-        color_discrete_map=cores,
+        category_orders={col3: ordem},
         hover_data={
-            'NU_ANO': True,
             'Q006': True,
             'Porcentagem': True,
             'Porcentagem_acumulada': True,
@@ -274,7 +297,6 @@ def grafico_relative(df,col1,col2,col3,title):
             'percentual_acumulado': False
         },
         labels={
-            'NU_ANO': 'Ano',
             'Q006': 'Faixa de salário',
             'Porcentagem': 'Percentual (%)',
             'Porcentagem_acumulada': 'Porcentagem acumulada (%)',

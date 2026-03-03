@@ -694,13 +694,14 @@ def pagina_enem_social():
                 df_tratado = fs.classes(df_teste)
                 teste = fs.multi(df_tratado, 'NU_ANO', 'Q006')
 
+                #st.write(teste)
+
                 pizza10 = fs.grafico_pizza(
-                    teste,
+                    df_tratado,
                     'Q006',
                     'Q006',
                     'quantidade',
                     'Percentuais gerais em todos os anos',
-                    False,
                 )
 
             with col2:
@@ -708,7 +709,8 @@ def pagina_enem_social():
 
         with st.expander('Distribuição de renda por cor/raça'):
 
-            df_tratado2 = fs.multi(df, 'NU_ANO', 'TP_COR_RACA','Q006')
+            df_tratado2 = fs.multi(df,'TP_COR_RACA','Q006')
+            #st.write(df_tratado2)
             tab20 = fs.grafico_relative(df_tratado2, 'TP_COR_RACA', 'percentual', 'Q006', 'Percentuais por cor/raça em todos os anos')
 
         with st.expander('Distribuição de renda por estado civil'):
@@ -777,7 +779,7 @@ def pagina_enem_social():
                     'possui quantas maquinas de lavar?',
                     'Quantidade de respostas',
                     'Possuem maquinas de lavar roupa em todos os anos',
-                    map,
+                    map
                 )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q014')
