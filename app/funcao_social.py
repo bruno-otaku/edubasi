@@ -49,7 +49,7 @@ def multicolunas(df, resp):
     df_filtrado = df[(df['Q010'].isin(vet[0])) & (df['Q011'].isin(vet[1]))]
     return df_filtrado
 
-def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False):
+def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False, categoria=False):
 
 
     if map:
@@ -67,14 +67,24 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False)
     #st.write(info)
     #cores_map = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
-    pizza = px.pie(info,
-                   names=col1,
-                   values=col2,
-                   color=col2,
-                   category_orders={
-                       col1: sorted(info[col1].unique(), key=lambda x: x.lower())
-                   },
-                   title=tile)
+    if categoria:
+        pizza = px.pie(info,
+                       names=col1,
+                       values=col2,
+                       color=col2,
+                       category_orders={
+                           col1: categoria
+                       },
+                       title=tile)
+    else:
+        pizza = px.pie(info,
+                       names=col1,
+                       values=col2,
+                       color=col2,
+                       category_orders={
+                           col1: sorted(info[col1].unique(), key=lambda x: x.lower())
+                       },
+                       title=tile)
 
     if legenda_baixa:
         pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1))
@@ -120,37 +130,67 @@ def multi (df, col1, col2, col3=False):
 
     return df
 
-def grafico_renda(df, col1, col2, col3, horientacao=False, legenda_top=False):
+def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legenda_top=False):
     df = df.copy()
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
 
 
-    if horientacao == 'h':
-        barra=px.bar(
-            df,
-            x=col1,
-            y=col2,
-            color = col3,
-            text=df["label"],
-            orientation='h',
-            barmode = 'group'
-        )
-        barra.update_layout(
-            xaxis=dict(title='Anos'),
-            legend_title='Legenda',
-            paper_bgcolor='white',
-            plot_bgcolor='#EAEAEA'
-        )
+    if catego:
+        st.write('passei aqui')
+        if horientacao == 'h':
+            barra=px.bar(
+                df,
+                x=col1,
+                y=col2,
+                color = col3,
+                category_orders={col3: catego},
+                text=df["label"],
+                orientation='h',
+                barmode = 'group'
+            )
+            barra.update_layout(
+                xaxis=dict(title='Anos'),
+                legend_title='Legenda',
+                paper_bgcolor='white',
+                plot_bgcolor='#EAEAEA'
+            )
+        else:
+            barra = px.bar(
+                df,
+                x=col1,
+                y=col2,
+                color=col3,
+                category_orders={col3: catego},
+                text=df["label"],
+                orientation='v',
+                barmode='group')
     else:
-        barra = px.bar(
-            df,
-            x=col1,
-            y=col2,
-            color=col3,
-            text=df["label"],
-            orientation='v',
-            barmode='group')
+        if horientacao == 'h':
+            barra=px.bar(
+                df,
+                x=col1,
+                y=col2,
+                color = col3,
+                text=df["label"],
+                orientation='h',
+                barmode = 'group'
+            )
+            barra.update_layout(
+                xaxis=dict(title='Anos'),
+                legend_title='Legenda',
+                paper_bgcolor='white',
+                plot_bgcolor='#EAEAEA'
+            )
+        else:
+            barra = px.bar(
+                df,
+                x=col1,
+                y=col2,
+                color=col3,
+                text=df["label"],
+                orientation='v',
+                barmode='group')
 
     if legenda_top:
         barra.update_layout(
@@ -192,10 +232,11 @@ def grafico_teste(df):
     ], ignore_index=True)
 
     df_final['percentual'] = (df_final['quantidade'] /df_final.groupby('NU_ANO')['quantidade'].transform('sum')) * 100
-    df_final["percentual"] = df_final["percentual"].map("{:.2f}%".format)
+    df_final["Porcentagem"] = df_final["percentual"].map("{:.2f}%".format)
 
     df_final['NU_ANO'] = df_final['NU_ANO'].astype(str)
-    #st.write(df_final)
+    df_final['percentual_acumulado'] = (df_final.groupby(['NU_ANO'])['percentual'].cumsum())
+    st.write(df_final)
 
     ordem = [
         "Nenhuma renda.",
@@ -286,7 +327,6 @@ def grafico_relative(df,col1,col2,col3,title):
         x=col1,
         y=col2,
         color=col3,
-        category_orders={col3: ordem},
         hover_data={
             'Q006': True,
             'Porcentagem': True,
@@ -719,4 +759,3 @@ def mapeamento(select):
         return vet
     # ====================================================================================================================
     '''''
-

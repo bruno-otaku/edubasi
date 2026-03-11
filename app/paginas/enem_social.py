@@ -578,6 +578,29 @@ def pagina_enem_social():
                     '20': "Maior de 70 anos"
                 }
 
+                catego = [
+                    "Menor de 17 anos",
+                    "17 anos",
+                    "18 anos",
+                    "19 anos",
+                    "20 anos",
+                    "21 anos",
+                    "22 anos",
+                    "23 anos",
+                    "24 anos",
+                    "25 anos",
+                    "Entre 26 e 30 anos",
+                    "Entre 31 e 35 anos",
+                    "Entre 36 e 40 anos",
+                    "Entre 41 e 45 anos",
+                    "Entre 46 e 50 anos",
+                    "Entre 51 e 55 anos",
+                    "Entre 56 e 60 anos",
+                    "Entre 61 e 65 anos",
+                    "Entre 66 e 70 anos",
+                    "Maior de 70 anos"
+                ]
+
                 pizza11 = fs.grafico_pizza(
                     df,
                     'TP_FAIXA_ETARIA',
@@ -585,11 +608,13 @@ def pagina_enem_social():
                     'quantidade',
                     'Faixa etária em todos os anos',
                     map_faixa,
+                    None,
+                    catego
 
                 )
             with col2:
                 df_filtrado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA')
-                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'TP_FAIXA_ETARIA',None, True )
+                multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'TP_FAIXA_ETARIA',catego,None, True, )
 
     with tab3:
         # ============ tipo de depedencia ===========================
@@ -715,27 +740,27 @@ def pagina_enem_social():
 
         with st.expander('Distribuição de renda por estado civil'):
 
-            df_tratado = fs.multi(df, 'NU_ANO', 'TP_ESTADO_CIVIL', 'Q006')
+            df_tratado = fs.multi(df,'TP_ESTADO_CIVIL', 'Q006')
             tab21 = fs.grafico_relative(df_tratado, 'TP_ESTADO_CIVIL', 'percentual', 'Q006', 'Percentuais por estado civil em todos os anos')
 
         with st.expander('Distribuição de renda por idade'):
 
-            df_tratado = fs.multi(df, 'NU_ANO', 'TP_FAIXA_ETARIA', 'Q006')
+            df_tratado = fs.multi(df,'TP_FAIXA_ETARIA', 'Q006')
             tab22 = fs.grafico_relative(df_tratado,'TP_FAIXA_ETARIA', 'percentual', 'Q006', 'Percentuais por idade em todos os anos')
 
         with st.expander('Distribuição de renda por administração da escola'):
 
-            df_tratado = fs.multi(df, 'NU_ANO', 'TP_DEPENDENCIA_ADM_ESC', 'Q006')
+            df_tratado = fs.multi(df,'TP_DEPENDENCIA_ADM_ESC', 'Q006')
             tab22 = fs.grafico_relative(df_tratado, 'TP_DEPENDENCIA_ADM_ESC', 'percentual', 'Q006', 'Percentuais por administração escolar em todos os anos')
 
         with st.expander('Distribuição de renda por localidade'):
 
-            df_tratado = fs.multi(df, 'NU_ANO', 'TP_LOCALIZACAO_ESC', 'Q006')
+            df_tratado = fs.multi(df,'TP_LOCALIZACAO_ESC', 'Q006')
             tab22 = fs.grafico_relative(df_tratado, 'TP_LOCALIZACAO_ESC', 'percentual', 'Q006','Percentuais por localidade em todos os anos')
 
         with st.expander('Distribuição de renda por tipo de ensino'):
 
-            df_tratado = fs.multi(df, 'NU_ANO', 'TP_ENSINO', 'Q006')
+            df_tratado = fs.multi(df, 'TP_ENSINO', 'Q006')
             tab22 = fs.grafico_relative(df_tratado, 'TP_ENSINO', 'percentual', 'Q006','Percentuais por tipo de ensino em todos os anos')
 
     with tab5:
@@ -782,8 +807,15 @@ def pagina_enem_social():
                     map
                 )
             with col2:
+                catego = [
+                    'Duas.',
+                    'Nenhuma.',
+                    'Quatro ou mais.',
+                    'Três.',
+                    'Uma.',
+                ]
                 df_filtrado = fs.multi(df, 'NU_ANO', 'Q014')
-                multi_tab_generico = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'Q014')
+                multi_tab_generico = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', 'Q014', catego)
         with st.expander('Televisão'):
             col1, col2 = st.columns(2)
             with col1:
