@@ -1050,9 +1050,7 @@ def pagina_enem_social():
             'Na sua residência tem aspirador de pó?',
             'Na sua residência tem aparelho de DVD?',
             'Na sua residência tem TV por assinatura?',
-            'Na sua residência tem telefone fixo?',
-            'Você já concluiu ou está concluindo o Ensino Médio?',
-            'Em que tipo de escola você frequentou o Ensino Médio?',
+            'Na sua residência tem telefone fixo?'
 
                         ),
             index=None,

@@ -437,25 +437,10 @@ def classes(df):
 
 def mapeamento(select):
     # ====================================================================================================================
-    if select == 'Na sua residência tem telefone fixo?':
 
-        map = {
-            'A' : 'Nâo',
-            'B' : 'Sim'
-        }
-        vet = [
-            'Q023',
-            'Possui telefone fixo?',
-            'Quantidades de respostas',
-            'Possuem telefone fixo?',
-            map,
-            None,
-            None
-        ]
-        return vet
     # ====================================================================================================================
-    elif select == 'Até que série seu pai, ou o homem responsável por você, estudou?':
-
+    if select == 'Até que série seu pai, ou o homem responsável por você, estudou?':
+        '''
         mapa_escolaridade = {
             'A': "Nunca estudou.",
             'B': "Não completou a 4ª série/5º ano do Ensino Fundamental.",
@@ -466,6 +451,17 @@ def mapeamento(select):
             'G': "Completou a Pós-graduação.",
             'H': "Não sei."
         }
+        '''
+        mapa_escolaridade = {
+            'A': "Grupo 1",
+            'B': "Grupo 2",
+            'C': "Grupo 3",
+            'D': "Grupo 4",
+            'E': "Grupo 5",
+            'F': "Grupo 6",
+            'G': "Grupo 7",
+            'H': "Grupo 8"
+        }
 
         vet = [
             'Q001',
@@ -474,12 +470,13 @@ def mapeamento(select):
             'Até que série seu pai, ou o homem responsável por você, estudou?',
             mapa_escolaridade,
             None,
-            True
+            None
         ]
         return vet
     # ====================================================================================================================
     elif select == 'Até que série sua mãe, ou a mulher responsável por você, estudou?':
 
+        '''''
         map = {
             'A': "Nunca estudou.",
             'B': "Não completou a 4ª série/5º ano do Ensino Fundamental.",
@@ -490,6 +487,19 @@ def mapeamento(select):
             'G': "Completou a Pós-graduação.",
             'H': "Não sei."
         }
+        '''''
+
+        map = {
+            'A': "Grupo 1",
+            'B': "Grupo 2",
+            'C': "Grupo 3",
+            'D': "Grupo 4",
+            'E': "Grupo 5",
+            'F': "Grupo 6",
+            'G': "Grupo 7",
+            'H': "Não sei."
+        }
+
         vet = [
             'Q002',
             'Até que série a mãe ou mulher responsável fez:',
@@ -497,12 +507,13 @@ def mapeamento(select):
             'Até que série a mãe, ou mullher responsável por você, estudou?',
             map,
             None,
-            True
+            None
         ]
         return vet
     # ====================================================================================================================
     elif select == 'A partir da apresentação de algumas ocupações divididas em grupos ordenados, indique o grupo que contempla a ocupação mais próxima da ocupação do seu pai ou do homem responsável por você. (Se ele não estiver trabalhando, escolha uma ocupação pensando no último trabalho dele).':
 
+        '''''
         map = {
             "A": "Grupo 1: Lavrador, agricultor sem empregados, bóia fria, criador de animais (gado, porcos, galinhas, ovelhas, cavalos etc.), apicultor, pescador, lenhador, seringueiro, extrativista.",
 
@@ -516,6 +527,15 @@ def mapeamento(select):
 
             "F": "Não sei."
         }
+        '''''
+        map = {
+            "A": "Grupo 1",
+            "B": "Grupo 2",
+            "C": "Grupo 3",
+            "D": "Grupo 4",
+            "E": "Grupo 5",
+            "F": "Não sei"
+        }
         vet = [
             'Q003',
             'Grupo que contempla a ocupação mais próxima da ocupação do pai ou do homem responsável',
@@ -523,25 +543,21 @@ def mapeamento(select):
             'Grupo que contempla a ocupação mais próxima da ocupação do pai ou do homem responsável',
             map,
             None,
-            True
+            None
         ]
         return vet
     # ====================================================================================================================
     elif select == 'A partir da apresentação de algumas ocupações divididas em grupos ordenados, indique o grupo que contempla a ocupação mais próxima da ocupação da sua mãe ou da mulher responsável por você. (Se ela não estiver trabalhando, escolha uma ocupação pensando no último trabalho dela).':
 
         map = {
-            "A": "Grupo 1: Lavradora, agricultora sem empregados, bóia fria, criadora de animais (gado, porcos, galinhas, ovelhas, cavalos etc.), apicultora, pescadora, lenhadora, seringueira, extrativista.",
-
-            "B": "Grupo 2: Diarista, empregada doméstica, cuidadora de idosos, babá, cozinheira (em casas particulares), motorista particular, jardineira, faxineira de empresas e prédios, vigilante, porteira, carteira, office-boy, vendedora, caixa, atendente de loja, auxiliar administrativa, recepcionista, servente de pedreiro, repositora de mercadoria.",
-
-            "C": "Grupo 3: Padeira, cozinheira industrial ou em restaurantes, sapateira, costureira, joalheira, torneira mecânica, operadora de máquinas, soldadora, operária de fábrica, trabalhadora da mineração, pedreira, pintora, eletricista, encanadora, motorista, caminhoneira, taxista.",
-
-            "D": "Grupo 4: Professora (de ensino fundamental ou médio, idioma, música, artes etc.), técnica (de enfermagem, contabilidade, eletrônica etc.), policial, militar de baixa patente (soldado, cabo, sargento), corretora de imóveis, supervisora, gerente, mestre de obras, pastora, microempresária (proprietária de empresa com menos de 10 empregados), pequena comerciante, pequena proprietária de terras, trabalhadora autônoma ou por conta própria.",
-
-            "E": "Grupo 5: Médica, engenheira, dentista, psicóloga, economista, advogada, juíza, promotora, defensora, delegada, tenente, capitã, coronel, professora universitária, diretora em empresas públicas ou privadas, política, proprietária de empresas com mais de 10 empregados.",
-
-            "F": "Não sei."
+            "A": "Grupo 1",
+            "B": "Grupo 2",
+            "C": "Grupo 3",
+            "D": "Grupo 4",
+            "E": "Grupo 5",
+            "F": "Não sei"
         }
+
         vet = [
             'Q004',
             'Grupo que contempla a ocupação mais próxima da ocupação da mãe ou da mulher responsável',
@@ -549,7 +565,7 @@ def mapeamento(select):
             'Grupo que contempla a ocupação mais próxima da ocupação da mãe ou da mulher responsável',
             map,
             None,
-            True
+            None
         ]
         return vet
     # ====================================================================================================================
@@ -713,6 +729,22 @@ def mapeamento(select):
             'Possue TV por assinatura?',
             'Quantidade de respostas',
             'Possue TV por assinatura?',
+            map,
+            None,
+            None
+        ]
+        return vet
+    elif select == 'Na sua residência tem telefone fixo?':
+
+        map = {
+            'A' : 'Nâo',
+            'B' : 'Sim'
+        }
+        vet = [
+            'Q023',
+            'Possui telefone fixo?',
+            'Quantidades de respostas',
+            'Possuem telefone fixo?',
             map,
             None,
             None
