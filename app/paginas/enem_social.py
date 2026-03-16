@@ -1077,6 +1077,11 @@ def pagina_enem_social():
                 df_filtrado = fs.multi(df, 'NU_ANO', controle[0])
                 multi_tab_faixa = fs.grafico_renda(df_filtrado, 'NU_ANO', 'quantidade', controle[0], controle[5], controle[6])
 
+            if controle[0] == 'Q001' or controle[0] == 'Q002' or controle[0] == 'Q003' or controle[0] == 'Q004':
+
+                with st.expander('Legenda longa'):
+                    st.markdown(controle[7])
+
 
         else:
             st.write("Nada selecionado")
