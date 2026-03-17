@@ -135,6 +135,7 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
 
+    #st.write(df)
 
     if catego:
         st.write('passei aqui')
@@ -284,6 +285,7 @@ def grafico_teste(df):
     return st.plotly_chart(fig, use_container_width=True)
 
 def grafico_relative(df,col1,col2,col3,title):
+
     ordem = [
         "Nenhuma renda.",
         "Até 1 salário minímo.",
@@ -303,6 +305,7 @@ def grafico_relative(df,col1,col2,col3,title):
         "De 15 até 20 salários minímo.",
         "Mais de 20 salários minímo."
     ]
+
     df[col3] = pd.Categorical(
         df[col3],
         categories=ordem,
@@ -439,6 +442,28 @@ def mapeamento(select):
     # ====================================================================================================================
 
     # ====================================================================================================================
+    # isso são ordens para que a legenda dos graficos fiquem em uma ordem certa de leitura, não mude sem saber o que vai acontecer pelo amor de deus
+    ordem1 = [
+        "Não.",
+        "Sim, um.",
+        "Sim, dois.",
+        "Sim, três.",
+        "Sim, quatro ou mais."
+    ]
+
+    ordem2 = [
+        "Não.",
+        "Sim, uma.",
+        "Sim, duas.",
+        "Sim, três.",
+        "Sim, quatro ou mais."
+    ]
+
+    ordem3 = [
+        'Nâo',
+        'Sim'
+    ]
+
     if select == 'Até que série seu pai, ou o homem responsável por você, estudou?':
 
         markdown = ("""
@@ -469,6 +494,7 @@ def mapeamento(select):
             'Quantidade de respostas',
             'Até que série seu pai, ou o homem responsável por você, estudou?',
             mapa_escolaridade,
+            None,
             None,
             None,
             markdown
@@ -507,7 +533,9 @@ def mapeamento(select):
             map,
             None,
             None,
-            markdown
+            None,
+            markdown,
+
 
         ]
         return vet
@@ -537,6 +565,7 @@ def mapeamento(select):
             'Quantidade de respostas',
             'Grupo que contempla a ocupação mais próxima da ocupação do pai ou do homem responsável',
             map,
+            None,
             None,
             None,
             markdown
@@ -571,34 +600,59 @@ def mapeamento(select):
             map,
             None,
             None,
+            None,
             markdown
         ]
         return vet
     # ====================================================================================================================
     elif select == 'Incluindo você, quantas pessoas moram atualmente em sua residência?':
 
+        ordem = [
+            '1, pois moro sozinho(a)',
+            '2 pessoas',
+            '3 pessoas',
+            '4 pessoas',
+            '5 pessoas',
+            '6 pessoas',
+            '7 pessoas',
+            '8 pessoas',
+            '9 pessoas',
+            '10 pessoas',
+            '11 pessoas',
+            '12 pessoas',
+            '13 pessoas',
+            '14 pessoas',
+            '15 pessoas',
+            '16 pessoas',
+            '17 pessoas',
+            '18 pessoas',
+            '19 pessoas',
+            '20 pessoas'
+        ]
+
         map = {
-            "1": "1, pois moro sozinho(a).",
-            "2": "2",
-            "3": "3",
-            "4": "4",
-            "5": "5",
-            "6": "6",
-            "7": "7",
-            "8": "8",
-            "9": "9",
-            "10": "10",
-            "11": "11",
-            "12": "12",
-            "13": "13",
-            "14": "14",
-            "15": "15",
-            "16": "16",
-            "17": "17",
-            "18": "18",
-            "19": "19",
-            "20": "20"
+            "1": "1, pois moro sozinho(a)",
+            "2": "2 pessoas",
+            "3": "3 pessoas",
+            "4": "4 pessoas",
+            "5": "5 pessoas",
+            "6": "6 pessoas",
+            "7": "7 pessoas",
+            "8": "8 pessoas",
+            "9": "9 pessoas",
+            "10": "10 pessoas",
+            "11": "11 pessoas",
+            "12": "12 pessoas",
+            "13": "13 pessoas",
+            "14": "14 pessoas",
+            "15": "15 pessoas",
+            "16": "16 pessoas",
+            "17": "17 pessoas",
+            "18": "18 pessoas",
+            "19": "19 pessoas",
+            "20": "20 pessoas"
         }
+
         vet = [
             'Q005',
             'Quantidade de pessoas que moram na residência',
@@ -606,11 +660,14 @@ def mapeamento(select):
             'Quantidade de pessoas que moram na residência',
             map,
             None,
-            None
+            None,
+            ordem
         ]
         return vet
     #====================================================================================================================
     elif select == 'Na sua residência tem geladeira?':
+
+
 
         map = {
             "A": "Não.",
@@ -626,7 +683,8 @@ def mapeamento(select):
             'Possue geladeira?',
             map,
             None,
-            None
+            None,
+            ordem2
         ]
         return vet
     # ====================================================================================================================
@@ -646,7 +704,8 @@ def mapeamento(select):
             'Possue freezer?',
             map,
             None,
-            None
+            None,
+            ordem1
         ]
         return vet
     # ====================================================================================================================
@@ -654,8 +713,8 @@ def mapeamento(select):
 
         map = {
             "A": "Não.",
-            "B": "Sim, um.",
-            "C": "Sim, dois.",
+            "B": "Sim, uma.",
+            "C": "Sim, duas.",
             "D": "Sim, três.",
             "E": "Sim, quatro ou mais."
         }
@@ -666,7 +725,8 @@ def mapeamento(select):
             'Possue maquina de secar roupa?',
             map,
             None,
-            None
+            None,
+            ordem2
         ]
         return vet
     # ====================================================================================================================
@@ -674,8 +734,8 @@ def mapeamento(select):
 
         map = {
             "A": "Não.",
-            "B": "Sim, um.",
-            "C": "Sim, dois.",
+            "B": "Sim, uma.",
+            "C": "Sim, duas.",
             "D": "Sim, três.",
             "E": "Sim, quatro ou mais."
         }
@@ -686,7 +746,8 @@ def mapeamento(select):
             'Possue máquina de lavar louça?',
             map,
             None,
-            None
+            None,
+            ordem2
         ]
         return vet
     # ====================================================================================================================
@@ -703,7 +764,8 @@ def mapeamento(select):
             'Possue aspirador de pó?',
             map,
             None,
-            None
+            None,
+            ordem3
         ]
         return vet
     # ====================================================================================================================
@@ -720,7 +782,8 @@ def mapeamento(select):
             'Possue aparelho de DVD?',
             map,
             None,
-            None
+            None,
+            ordem3
         ]
         return vet
     # ====================================================================================================================
@@ -737,7 +800,8 @@ def mapeamento(select):
             'Possue TV por assinatura?',
             map,
             None,
-            None
+            None,
+            ordem3
         ]
         return vet
     elif select == 'Na sua residência tem telefone fixo?':
@@ -753,12 +817,15 @@ def mapeamento(select):
             'Possuem telefone fixo?',
             map,
             None,
-            None
+            None,
+            ordem3
         ]
         return vet
     # ====================================================================================================================
     else:
         st.write("não caiu em nenhuma opção")
+
+
     '''''
     elif select == 'Você já concluiu ou está concluindo o Ensino Médio?':
 
