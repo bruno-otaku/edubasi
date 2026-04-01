@@ -21,14 +21,13 @@ def filtro_alunos_sem_escola(df, resp):
     if resp == True:
         return df
     else:
-        vet = ['1', '2', '3']
-        df = df[df['TP_ENSINO'].isin(vet)]
+        df = df[df['NO_MUNICIPIO_ESC'].notna()]
         return df
 
-def filtro_multiselect(df, sexo, map, coluna):
+def filtro_multiselect(df, selecao, map, coluna):
     aux = []
-    if len(sexo) > 0:
-        for i in sexo:
+    if len(selecao) > 0:
+        for i in selecao:
             aux.append(map[i])
         df = df[df[coluna].isin(aux)]
         return df
@@ -87,9 +86,18 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False,
                        title=tile)
 
     if legenda_baixa:
-        pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1))
+        pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1),
+                            height=600)
+        pizza.update_traces(
+            textfont=dict(size=20),
+
+        )
 
     else:
+        pizza.update_traces(
+            textfont=dict(size=20),
+
+        )
 
         pizza.update_layout(legend_title_text= 'Legenda')
 
@@ -130,7 +138,7 @@ def multi (df, col1, col2, col3=False):
 
     return df
 
-def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legenda_top=False):
+def grafico_renda(df, col1, col2, col3, catego = False, title = False ,horientacao=False, legenda_top=False):
     df = df.copy()
     df['percentual'] = (df['quantidade'] / df.groupby(col1)['quantidade'].transform('sum')) * 100
     df['label'] = df['percentual'].map('{:.1f}%'.format)
@@ -138,7 +146,7 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
     #st.write(df)
 
     if catego:
-        st.write('passei aqui')
+        #st.write('passei aqui')
         if horientacao == 'h':
             barra=px.bar(
                 df,
@@ -148,7 +156,8 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
                 category_orders={col3: catego},
                 text=df["label"],
                 orientation='h',
-                barmode = 'group'
+                barmode = 'group',
+                title = title
             )
             barra.update_layout(
                 xaxis=dict(title='Anos'),
@@ -165,7 +174,8 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
                 category_orders={col3: catego},
                 text=df["label"],
                 orientation='v',
-                barmode='group')
+                barmode='group',
+                title = title)
     else:
         if horientacao == 'h':
             barra=px.bar(
@@ -175,7 +185,8 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
                 color = col3,
                 text=df["label"],
                 orientation='h',
-                barmode = 'group'
+                barmode = 'group',
+                title=title
             )
             barra.update_layout(
                 xaxis=dict(title='Anos'),
@@ -191,14 +202,17 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
                 color=col3,
                 text=df["label"],
                 orientation='v',
-                barmode='group')
+                barmode='group',
+                title = title)
 
     if legenda_top:
+        barra.update_traces(
+            textfont=dict(size=25)
+        )
+
         barra.update_layout(
             xaxis=dict(title='Anos'),
             legend_title='Legenda',
-            paper_bgcolor='white',
-            plot_bgcolor='#EAEAEA',
             legend=dict(
                 orientation="h",
                 yanchor="top",
@@ -209,11 +223,13 @@ def grafico_renda(df, col1, col2, col3, catego = False, horientacao=False, legen
             margin=dict(b=120)
         )
     else:
+        barra.update_traces(
+            textfont=dict(size=25)
+        )
+
         barra.update_layout(
             xaxis=dict(title='Anos'),
             legend_title='Legenda',
-            paper_bgcolor='white',
-            plot_bgcolor='#EAEAEA'
         )
 
 
@@ -237,7 +253,7 @@ def grafico_teste(df):
 
     df_final['NU_ANO'] = df_final['NU_ANO'].astype(str)
     df_final['percentual_acumulado'] = (df_final.groupby(['NU_ANO'])['percentual'].cumsum())
-    st.write(df_final)
+    #st.write(df_final)
 
     ordem = [
         "Nenhuma renda.",
@@ -389,8 +405,13 @@ def grafico_barra(df, coluna, col1, col2, titulo, mapa=False):
         text=info["Quantidade"],
         orientation='v',
         barmode='stack',
+        title=titulo,
 
 
+    )
+
+    barra.update_traces(
+        textfont=dict(size=25)
     )
 
 
@@ -398,12 +419,11 @@ def grafico_barra(df, coluna, col1, col2, titulo, mapa=False):
     barra.update_layout(
         xaxis=dict(title='Anos'),
         legend_title='Legenda',
-        paper_bgcolor='white',
-        plot_bgcolor='#EAEAEA'
+
     )
     barra.update_xaxes(type="category")
 
-    return st.plotly_chart(barra, use_container_width=True)
+    return st.plotly_chart(barra)
 
 def classes(df):
 
@@ -824,43 +844,3 @@ def mapeamento(select):
     # ====================================================================================================================
     else:
         st.write("não caiu em nenhuma opção")
-
-
-    '''''
-    elif select == 'Você já concluiu ou está concluindo o Ensino Médio?':
-
-        map = {
-            "A": "Já concluí o Ensino Médio.",
-            "B": "Estou cursando e concluirei o Ensino Médio em 2018.",
-            "C": "Estou cursando e concluirei o Ensino Médio após 2018.",
-            "D": "Não concluí e não estou cursando o Ensino Médio."
-        }
-        vet = [
-            'Q026',
-            'Concluiu ou está concluindo o Ensino Médio?',
-            'Quantidade de respostas',
-            'Concluiu ou está concluindo o Ensino Médio?',
-            map
-        ]
-        return vet
-    # ====================================================================================================================
-    elif select == 'Em que tipo de escola você frequentou o Ensino Médio?':
-
-        map = {
-            "A": "Somente em escola pública.",
-            "B": "Parte em escola pública e parte em escola privada SEM bolsa de estudo integral.",
-            "C": "Parte em escola pública e parte em escola privada COM bolsa de estudo integral.",
-            "D": "Somente em escola privada SEM bolsa de estudo integral.",
-            "E": "Somente em escola privada COM bolsa de estudo integral.",
-            "F": "Não frequentei a escola."
-        }
-        vet = [
-            'Q027',
-            'Tipo de escola frequentada no Ensino Médio?',
-            'Quantidade de respostas',
-            'Tipo de escola frequentada no Ensino Médio?',
-            map
-        ]
-        return vet
-    # ====================================================================================================================
-    '''''
