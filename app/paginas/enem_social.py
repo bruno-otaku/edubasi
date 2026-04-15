@@ -2,7 +2,7 @@ from importlib.resources import contents
 
 import streamlit as st
 import pandas as pd
-import funcao_social as fs
+from .Social import funcao_social as fs
 from fontTools.cffLib import FDSelect
 from streamlit import sidebar
 import edubasi
@@ -56,7 +56,7 @@ def pagina_enem_social():
                 cont = len(df_original)
 #=====================================================================================================
 
-            resp = st.checkbox('Incluir estudantes sem informação de escola', value=True)
+            resp = st.checkbox('Incluir estudantes sem informação de escola', value=False)
             df = fs.filtro_alunos_sem_escola(df_original, resp)
 
             resp1 = st.checkbox('Incluir alunos Treneiros', value=True)
@@ -468,11 +468,14 @@ def pagina_enem_social():
 
     with tab1:
 
-        col2, col3 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         cont1 = len(fs.filtro_prova_treino(df,False))
         cont2 = len(fs.filtro_prova_treino(df, '1'))
-        col2.metric('Regulares',value = str(cont1),border=True)
-        col3.metric('Treneiros',value=str(cont2), border=True)
+        cont3 = len(fs.filtro_prova_treino(df, True))
+        col1.metric('Regulares',value = str(cont1),border=True)
+        col2.metric('Treneiros',value=str(cont2), border=True)
+        col3.metric('Total',value=str(cont3), border=True)
+        
         #st.write(df)
 
         barra = fs.grafico_barra(
