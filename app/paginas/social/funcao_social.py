@@ -87,19 +87,25 @@ def grafico_pizza (df, coluna, col1, col2, tile, map=False, legenda_baixa=False,
 
     if legenda_baixa:
         pizza.update_layout(legend=dict(orientation = 'h',yanchor="middle",y=-0.99, xanchor="auto", x=0.1),
-                            height=600)
+                            height=600,
+                            )
         pizza.update_traces(
-            textfont=dict(size=20),
+            textfont=dict(size=25),
 
         )
 
     else:
         pizza.update_traces(
             textfont=dict(size=20),
-
+            
         )
 
-        pizza.update_layout(legend_title_text= 'Legenda')
+        pizza.update_layout(legend_title_text= 'Legenda',
+                            font=dict(
+                                family="Arial",
+                                size=40
+                                )
+                            )
 
 
 
